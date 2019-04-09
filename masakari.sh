@@ -138,7 +138,8 @@ build() {
 #
 create_masakari_database() {
 	#FNAME="create_masakari_database"
-	echo_console "+++++++++++databse bulding masakari+++++++++++"
+	echo_console "+++++++++++database bulding masakari+++++++++++"
+	sudo  apt-get install expect -y
 	MYSQL_CMD=$(expect -c "
         set timeout 3
         spawn mysql
