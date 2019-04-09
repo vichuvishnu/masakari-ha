@@ -124,7 +124,7 @@ echo_default_value () {
 #	0 : Success
 build() {
 	M_COMP=$1
-	FNAME="BUILD"
+	#FNAME="BUILD"
 	BULD_PATH="$MASAKARI_DIR/$M_COMP"
 	echo_console "+++++++++++bulding $M_COMP+++++++++++"
 	cd $BULD_PATH
