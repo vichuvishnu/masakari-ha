@@ -8,6 +8,12 @@ TOP_DIR=$(cd $(dirname "$0") && pwd)
 MASAKARI_DIR="$TOP_DIR/masakari"
 FNAME="masakari.sh"
 LOCAL_CONF="$TOP_DIR/local.conf"
+TABLE_TOP="+----------------------------------+-------------------------------+"
+TABLE_LEFT3="| "
+TABLE_RIGHT4="				|"
+TABLE_RIGHT3="			|"
+TABLE_RIGHT2="		|"
+TABLE_BOTTOM="+----------------------------------+-------------------------------+"
 
 
 
@@ -18,6 +24,15 @@ echo_console() {
 	echo "`date +'%Y-%m-%d %H:%M:%S'`::${FNAME} ::  $1" 
 }
 
+#This function outputs the error print
+#Argument
+#	$1 : Message
+echo_error () {
+	echo_console "###########################################################"
+	echo_console "# $1 "
+	echo_console "# :-( :-( :-("
+	echo_console "###########################################################"
+}
 # Check the value is correct type
 # Argument
 #   $1: Type
@@ -84,18 +99,18 @@ set_conf_value () {
 #
 #
 echo_default_value () {
-	echo_console "+--------------------------+--------------------------+"
-	echo_console "| Host Name                | $HOST_NAME               |"
-	echo_console "| HOST_IP                  | $HOSY_IP                 |"
-	echo_console "| CONTROLLER_IP            | $CONTROLLER_IP           |"
-	echo_console "| REVISION                 | $REVISION                |"
+	echo_console "$TABLE_TOP"
+	echo_console "$TABLE_LEFT3 Host Name $TABLE_RIGHT3 $HOST_NAME $TABLE_RIGHT3"
+	echo_console "$TABLE_LEFT3 Host IP $TABLE_RIGHT3 $HOST_IP $TABLE_RIGHT2"
+	echo_console "$TABLE_LEFT3 CONTROLLER_IP $TABLE_RIGHT3 $CONTROLLER_IP $TABLE_RIGHT2"
+	echo_console "$TABLE_LEFT3 REVISION $TABLE_RIGHT3 $REVISION $TABLE_RIGHT3"
 	if [ $HOST_NAME == "controller" ]; then
-		echo_console "| DATABASE_NAME            | vm_ha                    |"
-		echo_console "| DATABASE_USERNAME        | vm_ha                    |"
-		echo_console "| DATABASE_PASSWORD        | accl                     |"
-		echo_console "+--------------------------+--------------------------+"
+		echo_console "$TABLE_LEFT3 DATABASE_NAME $TABLE_RIGHT3 vm_ha $TABLE_RIGHT3"
+		echo_console "$TABLE_LEFT3 DATABASE_USERNAME $TABLE_RIGHT2 vm_ha $TABLE_RIGHT3"
+		echo_console "$TABLE_LEFT3 DATABASE_PASSWORD $TABLE_RIGHT2 accl $TABLE_RIGHT4"
+		echo_console "$TABLE_BOTTOM"
 	elif [ $HOST_NAME == "compute" ]; then
-		echo_console "+--------------------------+--------------------------+"
+		echo_console "$TABLE_BOTTOM"
 	else
 		echo_console "+--------------------------+--------------------------+"
 		echo_console "+Information error         | :-(                      +"
@@ -122,7 +137,7 @@ build() {
 #
 #
 create_masakari_database() {
-	FNAME="create_masakari_database"
+	#FNAME="create_masakari_database"
 	echo_console "+++++++++++databse bulding masakari+++++++++++"
 	MYSQL_CMD=$(expect -c "
         set timeout 3
@@ -143,7 +158,7 @@ create_masakari_database() {
 #Accoriding to the revision
 #
 mdc_masakari_clone() {
-	FNAME="mdc_masakari_clone"
+	#FNAME="mdc_masakari_clone"
 	echo_console "+++++++++++clonnig masakari+++++++++++"
 	cd $TOP_DIR
 	git clone "https://github.com/ntt-sic/masakari.git" --branch $REVISION
@@ -154,8 +169,8 @@ mdc_masakari_clone() {
 #
 #
 #
-mdc_masakari_build() {
-	FNAME="mdc_masakari_build"
+mdc_masakari_build () {
+	#FNAME="mdc_masakari_build"
 	echo_console "+++++++++++bulding masakari+++++++++++"
 	sudo apt-get install python-daemon dpkg-dev debhelper -y
 	sudo useradd -s /bin/bash -d /home/openstack -m openstack
@@ -168,6 +183,7 @@ mdc_masakari_build() {
 		build "masakari-processmonitor"
 	else
 		return 1
+	fi
 	return 0
 }
 
@@ -176,7 +192,7 @@ mdc_masakari_build() {
 #
 #
 mdc_masakari_install () {
-	FNAME="mdc_masakari_install"
+	#FNAME="mdc_masakari_install"
 	echo_console "+++++++++++installing masakari+++++++++++"
 	result=0
 	sudo apt-get install build-essential python-dev libmysqlclient-dev libffi-dev libssl-dev python-pip -y
@@ -202,7 +218,7 @@ mdc_masakari_install () {
 #
 #
 mdc_masakari_conf () {
-	FNAME="mdc_masakari_conf"
+	#FNAME="mdc_masakari_conf"
 	echo_console "+++++++++++configuring masakari+++++++++++"
 	if [ $HOST_NAME == "controller" ]; then
 		#masakari controller configuration
@@ -260,13 +276,60 @@ mdc_masakari_conf () {
 		sudo mv $TOP_DIR/etc/proc.list.sample /etc/masakari/proc.list
 	else
 		return -1
-	if
+	fi
 	return 0
 }
 
+#
+#
+#
+mdc_masakari_database_populate () {
+	#FNAME="mdc_masakari_database_populate"
+	cd $MASAKARI_DIR
+	sudo ./masakari_database_setting.sh
+	return $?
+}
 
+#
+#
+#
+mdc_masakari_start () {
+	#FNAME="mdc_masakari_start"
+	if [ $HOST_NAME == "controller" ]; then
+		sudo service masakari-controller restart
+	elif [ $HOST_NAME == "compute" ]; then
+		sudo service corosync restart
+		sudo service pacemaker restart
+		sudo service masakari-instancemonitor restart
+		sudo service masakari-processmonitor restart
+		sudo service masakari-hostmonitor restart
+	else
+		return 1
+	fi
+	return 0
+}
+
+#
+#
+#
+mdc_masakari_status () {
+	#FNAME="mdc_masakari_status"
+	if [ $HOST_NAME == "controller" ]; then
+		sudo service masakari-controller status
+	elif [ $HOST_NAME == "compute" ]; then
+		sudo service corosync status
+		sudo service pacemaker status
+		sudo service masakari-instancemonitor status
+		sudo service masakari-processmonitor status
+		sudo service masakari-hostmonitor status
+		sudo crm status
+	else
+		return 1
+	fi
+	return 0
+}
 #main routine
-
+result=0
 FNAME="masakari.sh"
 
 echo_console "###########################################################"
@@ -276,14 +339,61 @@ echo_console "###########################################################"
 set_conf_value
 
 mdc_masakari_clone
-mdc_masakari_build
-mdc_masakari_install
-mdc_masakari_conf
+result=$?
+if [ $result -ne 0 ]; then
+	echo_error "error while cloning."
+	exit 1
+fi
 
-echo_console "###########################################################"
-echo_console "#            masakari installation in controller          #"  
-echo_console "#            is success         :-)  :-) :-)              #"
-echo_console "###########################################################"
+mdc_masakari_build
+result=$?
+if [ $result -ne 0 ]; then
+	echo_error "error while bulding."
+	exit 1
+fi
+
+mdc_masakari_install
+result=$?
+if [ $result -ne 0 ]; then
+	echo_error "error while installing."
+	exit 1
+fi
+
+mdc_masakari_conf
+result=$?
+if [ $result -ne 0 ]; then
+	echo_error "error while seting configuration file."
+	exit 1
+fi
+
+if [ $HOST_NAME == "controller" ]; then
+	mdc_masakari_database_populate
+	result=$?
+	if [ $result -ne 0 ]; then
+		echo_error "error while populating database."
+		exit 1
+	fi
+fi
+
+mdc_masakari_start
+result=$?
+if [ $result -ne 0 ]; then
+	echo_error "error while starting service."
+	exit 1
+fi
+
+mdc_masakari_status
+result=$?
+if [ $result -ne 0 ]; then
+	echo_error "error while checking status."
+	exit 1
+fi
+
+
+echo_console "############################################################"
+echo_console "#            masakari installation in $HOST_NAME		#"  
+echo_console "#            is success         :-)  :-) :-)		#"
+echo_console "############################################################"
 
 echo_default_value
 #end
