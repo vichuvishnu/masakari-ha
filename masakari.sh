@@ -234,25 +234,25 @@ mdc_masakari_conf () {
 		
 		#masakari reserve host adding
 		echo_console "etc/reserved_host_add.sh ->  $TOP_DIR/reserved_host_add.sh"
-		sudo mv $TOP_DIR/etc/reserved_host_add.sh.sample $TOP_DIR
+		sudo mv $TOP_DIR/etc/reserved_host_add.sh.sample $TOP_DIR/reserved_host_add.sh
 		sudo sed -i "s/DB_HOST=<controller ip>.*/host = $HOST_IP/g" $TOP_DIR/reserved_host_add.sh
 		sudo chmod 0755 $TOP_DIR/reserved_host_add.sh
 		
 		#masakari reserve host delete
 		echo_console "etc/reserved_host_delete.sh ->  $TOP_DIR/reserved_host_delete.sh"
-		sudo mv $TOP_DIR/etc/reserved_host_delete.sh.sample $TOP_DIR
+		sudo mv $TOP_DIR/etc/reserved_host_delete.sh.sh.sample $TOP_DIR/reserved_host_delete.sh
 		sudo sed -i "s/DB_HOST=<controller ip>.*/host = $HOST_IP/g" $TOP_DIR/reserved_host_delete.sh
 		sudo chmod 0755 $TOP_DIR/reserved_host_delete.sh
 		
 		#masakari reserve host list
 		echo_console "etc/reserved_host_list.sh ->  $TOP_DIR/reserved_host_list.sh"
-		sudo mv $TOP_DIR/etc/reserved_host_list.sh.sample $TOP_DIR
+		sudo mv $TOP_DIR/etc/reserved_host_list.sh.sample $TOP_DIR/reserved_host_list.sh
 		sudo sed -i "s/DB_HOST=<controller ip>.*/host = $HOST_IP/g" $TOP_DIR/reserved_host_list.sh
 		sudo chmod 0755 $TOP_DIR/reserved_host_list.sh
 		
 		#masakari reserve host update
 		echo_console "etc/reserved_host_update.sh ->  $TOP_DIR/reserved_host_update.sh"
-		sudo mv $TOP_DIR/etc/reserved_host_update.sh.sample $TOP_DIR
+		sudo mv $TOP_DIR/etc/reserved_host_update.sh.sample $TOP_DIR/reserved_host_update.sh
 		sudo sed -i "s/DB_HOST=<controller ip>.*/host = $HOST_IP/g" $TOP_DIR/reserved_host_update.sh
 		sudo chmod 0755 $TOP_DIR/reserved_host_update.sh
 	elif [ $HOST_NAME == "compute" ]; then
