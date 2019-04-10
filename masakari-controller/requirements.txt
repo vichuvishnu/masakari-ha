@@ -1,0 +1,17 @@
+# MySQL-python still used in utils/*.py scripts
+pytz>=2016.3
+MySQL-python>=1.2.5
+argparse>=1.2.1
+ecdsa>=0.13
+eventlet>=0.18.4
+greenlet>=0.4.9
+oslo.config>=3.10.0  # Apache-2.0
+oslo.context>=2.4.0 # Apache-2.0
+oslo.log>=1.14.0 # Apache-2.0
+paramiko>=1.16.0
+pycrypto>=2.6.1
+wsgiref>=0.1.2
+python-novaclient>=3.3.0
+python-keystoneclient>=2.3.1
+SQLAlchemy>=1.0.12
+SQLAlchemy-Utils>=0.32.0

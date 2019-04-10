@@ -1,0 +1,3 @@
+instancemonitor opt/masakari
+init.d/masakari-instancemonitor etc/init.d
+etc/masakari-instancemonitor.conf.sample etc/masakari

@@ -1,0 +1,3 @@
+hostmonitor opt/masakari
+init.d/masakari-hostmonitor etc/init.d
+etc/masakari-hostmonitor.conf.sample etc/masakari
