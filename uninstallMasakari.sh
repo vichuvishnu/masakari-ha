@@ -63,6 +63,7 @@ mdc_remove_masakariconif_files() {
 	if [ "$HOST_NAME" == "controller" ];then
 		sudo rm masakari-controller_1.0.0-1_all.deb masakari_database_setting.sh reserved_host_add.sh reserved_host_delete.sh reserved_host_list.sh reserved_host_update.sh
 		sudo rm -r /etc/masakari
+		sudo rm /usr/local/bin/mdc-masakari
 	elif [ "$HOST_NAME" == "compute" ]; then
 		sudo rm -r /etc/corosync
 		sudo rm /etc/default/corosync
@@ -82,6 +83,8 @@ if [ "$HOST_NAME" == "controller" ];then
 fi
 mdc_remove_masakariconif_files
 #end
+
+
 
 
 
