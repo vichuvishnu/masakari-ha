@@ -60,7 +60,8 @@ $ sudo -s
 # sudo dpkg -i masakari-controller_1.0.0-1_all.deb
 # vi /etc/masakari/masakari-controller.conf
 ```
-* in the db section.
+* edit masakari-controller.conf
+	* in the db section.
 ```conf
 [db]
 drivername = mysql
@@ -72,12 +73,12 @@ charset = utf8
 lock_retry_max_cnt = 5
 innodb_lock_wait_timeout = 10
 ```
-* in log section.
+	* in log section.
 ```conf
 [log]
 log_level = debug
 ```
-* in nova section.
+	* in nova section.
 ```conf
 [nova]
 domain = Default
@@ -91,7 +92,7 @@ project_name = admin
 # cd masakari/
 # vi masakari_database_setting.sh
 ```
-edit masakari_database_setting.sh file
+* edit masakari_database_setting.sh file
 ```bash
 #!/bin/bash
 
@@ -102,12 +103,12 @@ DB_HOST=<controller ip>
 cd masakari-controller/db
 sudo mysql -u${DB_USER} -p${DB_PASSWORD} -h${DB_HOST} -e "source create_vmha_database.sql"
 ```
-change masakari_database_setting.sh script to execuitable mode
+* change masakari_database_setting.sh script to execuitable mode
 ```bash
 # chmod +x masakari_database_setting.sh
 # vi reserved_host_add.sh
 ```
-edit reserved_host_add.sh file
+* edit reserved_host_add.sh file
 ```bash
 #!/bin/bash
 
@@ -124,12 +125,12 @@ sudo python reserve_host_manage.py --mode add \
 --db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
 --host $*
 ```
-change reserved_host_add.sh script to execuitable mode
+* change reserved_host_add.sh script to execuitable mode
 ```bash
 # chmod +x reserved_host_add.sh
 # vi reserved_host_delete.sh
 ```
-edit reserved_host_delete.sh file
+* edit reserved_host_delete.sh file
 ```bash
 #!/bin/bash
 
@@ -146,12 +147,12 @@ sudo python reserve_host_manage.py --mode delete \
 --db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
 --host $*
 ```
-change reserved_host_delete.sh script to execuitable mode
+* change reserved_host_delete.sh script to execuitable mode
 ```bash
 # chmod +x reserved_host_delete.sh
 # vi reserved_host_list.sh
 ```
-edit reserved_host_list.sh file
+* edit reserved_host_list.sh file
 ```bash
 #!/bin/bash
 
@@ -167,12 +168,12 @@ sudo python reserve_host_manage.py --mode list \
 --port "${MCASTADDR}:${MCASTPORT}" \
 --db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST}
 ```
-change reserved_host_list.sh script to execuitable mode
+* change reserved_host_list.sh script to execuitable mode
 ```bash
 # chmod +x reserved_host_list.sh
 # vi reserved_host_update.sh
 ```
-edit reserved_host_update.sh file
+* edit reserved_host_update.sh file
 ```bash
 #!/bin/bash
 
@@ -189,7 +190,7 @@ sudo python reserve_host_manage.py --mode add \
  --db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
  --before-host $1 --after-host $2
 ```
-change reserved_host_update.sh script to execuitable mode
+* change reserved_host_update.sh script to execuitable mode
 ```bash
 # chmod +x reserved_host_update.sh	
 ```
@@ -199,6 +200,7 @@ change reserved_host_update.sh script to execuitable mode
 # sudo apt-get install corosync pacemaker
 # vi /etc/default/corosync
 ```
+* edit corosync file
 ```conf
 # start corosync at boot [yes|no]
 START=yes
@@ -206,6 +208,7 @@ START=yes
 ```bash
 # vi /etc/corosync/corosync.conf
 ```
+* edit corosync.conf file
 ```conf
 # Please read the corosync.conf.5 manual page
 totem {
@@ -267,6 +270,7 @@ quorum {
 # sudo apt install crmsh
 # vi /etc/masakari/masakari-hostmonitor.conf
 ```
+* edit masakari-hostmonitor.conf file
 ```conf
 
 RM_URL="http://<controller ip>:15868"
@@ -276,12 +280,14 @@ LOG_LEVEL="debug"
 ```bash
 # vi /etc/masakari/masakari-instancemonitor.conf
 ```
+* edit masakari-instancemonitor.conf file
 ```conf
 url = http://<controller ip>:15868
 ```
 ```bash
 # vi /etc/masakari/masakari-processmonitor.conf
 ```
+* edit masakari-processmonitor.conf file
 ```conf
 RESOURCE_MANAGER_URL="http://<controller ip>:15868"
 PROCESS_CHECK_INTERVAL=5
