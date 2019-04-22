@@ -358,7 +358,7 @@ mdc_masakari_conf () {
 		
 		#masakari cli command
 		print 1 "masakari-controller/utils/reserve_host_manage.py ->  /usr/local/bin/mdc-masakari"
-		sudo cp $TOP_DIRmasakari-controller/utils/reserve_host_manage.py /usr/local/bin/mdc-masakari -v
+		sudo cp $TOP_DIR/masakari-controller/utils/reserve_host_manage.py /usr/local/bin/mdc-masakari -v
 		sudo chmod 0755 /usr/local/bin/mdc-masakari
 		
 	elif [ $HOST_NAME == "compute" ]; then
