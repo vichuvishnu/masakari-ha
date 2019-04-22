@@ -45,7 +45,7 @@ Steps to follow in masakari installation.
 	# cd masakari/masakari-controller
 	# sudo pip install -r requirements.txt
 ```
-	* Create Database for masakari.
+* Create Database for masakari.
 ```bash
 	# mysql
 		MariaDB [(none)]> CREATE DATABASE vm_ha;
@@ -58,117 +58,141 @@ Steps to follow in masakari installation.
 	# sudo dpkg -i masakari-controller_1.0.0-1_all.deb
 	# vi /etc/masakari/masakari-controller.conf
 ```
-	* in the db section.
+* in the db section.
 ```conf
-		[db]
-		drivername = mysql
-		host = <controller_ip>
-		name = vm_ha
-		user = vm_ha
-		passwd = accl
-		charset = utf8
-		lock_retry_max_cnt = 5
-		innodb_lock_wait_timeout = 10
+	[db]
+	drivername = mysql
+	host = <controller_ip>
+	name = vm_ha
+	user = vm_ha
+	passwd = accl
+	charset = utf8
+	lock_retry_max_cnt = 5
+	innodb_lock_wait_timeout = 10
 ```
-	* in log section.
-		[log]
-		log_level = debug
-	* in nova section.
-		[nova]
-		domain = Default
-		admin_user = admin
-		admin_password = accl
-		auth_url =  http://controller:5000/v3
-		project_name = admin
-	.# cd masakari/
-	.# vi masakari_database_setting.sh
-		
-		#!/bin/bash
+* in log section.
+```conf
+	[log]
+	log_level = debug
+```
+* in nova section.
+```conf
+	[nova]
+	domain = Default
+	admin_user = admin
+	admin_password = accl
+	auth_url =  http://controller:5000/v3
+	project_name = admin
+```
+```bash
+# cd masakari/
+# vi masakari_database_setting.sh
+```
+```bash
+	#!/bin/bash
 
-		DB_USER=vm_ha
-		DB_PASSWORD=accl
-		DB_HOST=<controller ip>
+	DB_USER=vm_ha
+	DB_PASSWORD=accl
+	DB_HOST=<controller ip>
 
-		cd masakari-controller/db
-		sudo mysql -u${DB_USER} -p${DB_PASSWORD} -h${DB_HOST} -e "source create_vmha_database.sql"
-	
-	.# chmod +x masakari_database_setting.sh
-	.# vi reserved_host_add.sh
-	
-		#!/bin/bash
+	cd masakari-controller/db
+	sudo mysql -u${DB_USER} -p${DB_PASSWORD} -h${DB_HOST} -e "source create_vmha_database.sql"
+```
+```bash
+# chmod +x masakari_database_setting.sh
+# vi reserved_host_add.sh
+```
+```bash
+	#!/bin/bash
 
-		DB_USER=vm_ha
-		DB_PASSWORD=accl
-		DB_HOST=<controller ip>
-		MCASTADDR=226.94.1.1
-		MCASTPORT=5405
+	DB_USER=vm_ha
+	DB_PASSWORD=accl
+	DB_HOST=<controller ip>
+	MCASTADDR=226.94.1.1
+	MCASTPORT=5405
 
-		cd masakari-controller/utils
-		sudo python reserve_host_manage.py --mode add \
-		--port "226.94.1.1:5405" \
-		--port "${MCASTADDR}:${MCASTPORT}" \
-		--db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
-		--host $*
-	.# chmod +x reserved_host_add.sh
-	.# vi reserved_host_delete.sh
-	
-		#!/bin/bash
+	cd masakari-controller/utils
+	sudo python reserve_host_manage.py --mode add \
+	--port "226.94.1.1:5405" \
+	--port "${MCASTADDR}:${MCASTPORT}" \
+	--db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
+	--host $*
+```
+```bash
+# chmod +x reserved_host_add.sh
+# vi reserved_host_delete.sh
+```
+```bash
+	#!/bin/bash
 
-		DB_USER=vm_ha
-		DB_PASSWORD=accl
-		DB_HOST=<controller ip>
-		MCASTADDR=226.94.1.1
-		MCASTPORT=5405
+	DB_USER=vm_ha
+	DB_PASSWORD=accl
+	DB_HOST=<controller ip>
+	MCASTADDR=226.94.1.1
+	MCASTPORT=5405
 
-		cd masakari-controller/utils
-		sudo python reserve_host_manage.py --mode delete \
-		--port "226.94.1.1:5405" \
-		--port "${MCASTADDR}:${MCASTPORT}" \
-		--db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
-		--host $*
-	.# chmod +x reserved_host_delete.sh
-	.# vi reserved_host_list.sh
-		
-		#!/bin/bash
+	cd masakari-controller/utils
+	sudo python reserve_host_manage.py --mode delete \
+	--port "226.94.1.1:5405" \
+	--port "${MCASTADDR}:${MCASTPORT}" \
+	--db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
+	--host $*
+```bash
+# chmod +x reserved_host_delete.sh
+# vi reserved_host_list.sh
+```
+```bash
+	#!/bin/bash
 
-		DB_USER=vm_ha
-		DB_PASSWORD=accl
-		DB_HOST=<controller ip>
-		MCASTADDR=226.94.1.1
-		MCASTPORT=5405
+	DB_USER=vm_ha
+	DB_PASSWORD=accl
+	DB_HOST=<controller ip>
+	MCASTADDR=226.94.1.1
+	MCASTPORT=5405
 
-		cd masakari-controller/utils
-		sudo python reserve_host_manage.py --mode list \
-		--port "226.94.1.1:5405" \
-		--port "${MCASTADDR}:${MCASTPORT}" \
-		--db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST}
+	cd masakari-controller/utils
+	sudo python reserve_host_manage.py --mode list \
+	--port "226.94.1.1:5405" \
+	--port "${MCASTADDR}:${MCASTPORT}" \
+	--db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST}
+```
+```bash
+# chmod +x reserved_host_list.sh
+# vi reserved_host_update.sh
+```
+```bash
+	#!/bin/bash
 
-	.# chmod +x reserved_host_list.sh
-	.# vi reserved_host_update.sh
-		
-		#!/bin/bash
+	DB_USER=vm_ha
+	DB_PASSWORD=accl
+	DB_HOST=192.168.1.225
+	MCASTADDR=226.94.1.1
+	MCASTPORT=5405
 
-		DB_USER=vm_ha
-		DB_PASSWORD=accl
-		DB_HOST=192.168.1.225
-		MCASTADDR=226.94.1.1
-		MCASTPORT=5405
-
-		cd masakari-controller/utils
-		sudo python reserve_host_manage.py --mode add \
-		 --port "226.94.1.1:5405" \
-		 --port "${MCASTADDR}:${MCASTPORT}" \
-		 --db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
-		 --before-host $1 --after-host $2
-	.# chmod +x reserved_host_update.sh	
-	
+	cd masakari-controller/utils
+	sudo python reserve_host_manage.py --mode add \
+	 --port "226.94.1.1:5405" \
+	 --port "${MCASTADDR}:${MCASTPORT}" \
+	 --db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
+	 --before-host $1 --after-host $2
+```
+```bash
+# chmod +x reserved_host_update.sh	
+```
 * In Compute (in both compute node)
 	** In compute section we need to install corosync and pacemaker
-	.# sudo apt-get install corosync pacemaker
-	.# vi /etc/default/corosync
+```bash
+	# sudo apt-get install corosync pacemaker
+	# vi /etc/default/corosync
+```
+	```conf
 		# start corosync at boot [yes|no]
 		START=yes
-	.# vi /etc/corosync/corosync.conf
+	```
+```bash
+	# vi /etc/corosync/corosync.conf
+```
+	```conf
 		# Please read the corosync.conf.5 manual page
 		totem {
 			version: 2
@@ -215,23 +239,36 @@ Steps to follow in masakari installation.
 			provider: corosync_votequorum
 			two_node: 1
 		}
-	.# sudo service corosync restart
-	.# sudo service pacemaker restart
-	.# cd masakari
-	.# sudo dpkg -i masakari-hostmonitor_1.0.0-1_all.deb
-	.# cd masakari
-	.# sudo dpkg -i masakari-instancemonitor_1.0.0-1_all.deb
-	.# cd masakari
-	.# sudo dpkg -i masakari-processmonitor_1.0.0-1_all.deb
-	.# sudo apt install crm114
-	.# sudo apt install crmsh
-	.# vi /etc/masakari/masakari-hostmonitor.conf
+	```
+```bash
+	# sudo service corosync restart
+	# sudo service pacemaker restart
+	# cd masakari
+	# sudo dpkg -i masakari-hostmonitor_1.0.0-1_all.deb
+	# cd masakari
+	# sudo dpkg -i masakari-instancemonitor_1.0.0-1_all.deb
+	# cd masakari
+	# sudo dpkg -i masakari-processmonitor_1.0.0-1_all.deb
+	# sudo apt install crm114
+	# sudo apt install crmsh
+	# vi /etc/masakari/masakari-hostmonitor.conf
+```
+```conf
+	
 		RM_URL="http://<controller ip>:15868"
 		
 		LOG_LEVEL="debug"
-	.# vi /etc/masakari/masakari-instancemonitor.conf
+```
+```bash
+	# vi /etc/masakari/masakari-instancemonitor.conf
+```
+```conf
 		url = http://<controller ip>:15868
-	.# vi /etc/masakari/masakari-processmonitor.conf
+```
+```bash
+	# vi /etc/masakari/masakari-processmonitor.conf
+```
+```conf
 		RESOURCE_MANAGER_URL="http://<controller ip>:15868"
 		PROCESS_CHECK_INTERVAL=5
 		PROCESS_REBOOT_RETRY=3
@@ -242,15 +279,15 @@ Steps to follow in masakari installation.
 		RESOURCE_MANAGER_SEND_RETRY_TIMEOUT=120
 		REGION_ID=RegionOne
 		LOG_LEVEL="info"
+```
 * Finilize Installation
 in controller
-
-	.# sudo service masakari-controller restart
-	
+```bash
+	# sudo service masakari-controller restart
+```	
 in compute
-	
-	.# sudo service masakari-hostmonitor restart
-	
-	.# sudo service masakari-processmonitor restart
-	
-	.# sudo service masakari-instancemonitor restart
+```bash
+	# sudo service masakari-hostmonitor restart
+	# sudo service masakari-processmonitor restart
+	# sudo service masakari-instancemonitor restart
+```
