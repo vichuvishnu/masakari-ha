@@ -22,4 +22,15 @@ $ sudo -s
 ```
 # [Installation by manually]
 Steps to follow in masakari installation. Check /masakari-doc/INSTALL.md
+
 # [Verify Operation]
+* In controller add the reserve host in to the database
+```bash
+cd masakari
+./reserved_host_add.sh <compute host name>
+./reserved_host_list.sh
+```
+* Create an instance in host that is going to down.
+* Verify that the instance is in the correct host.
+* Poweroff the host that contain instance.
+* After a few minutes the instance is move to the reserved host
