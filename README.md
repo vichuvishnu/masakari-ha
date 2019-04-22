@@ -16,53 +16,50 @@ Steps to follow in masakari installation.
 	# git clone "https://github.com/ntt-sic/masakari.git"
 ```
 * Install packages for buliding masakari services.
-
-	.# sudo apt-get install python-daemon dpkg-dev debhelper
-
+```bash
+	# sudo apt-get install python-daemon dpkg-dev debhelper
+```
 * Create a user openstack required by masakari with no password .
-
-	.# sudo useradd -s /bin/bash -d /home/openstack -m openstack
-	
-	.# echo "openstack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/openstack
-
+```bash
+	# sudo useradd -s /bin/bash -d /home/openstack -m openstack
+	# echo "openstack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/openstack
+```
 ## [Bulding Masakari Packages]
 * Creating Masakari Packages it should be done in both controller and compute nodes.
-	.# cd masakari/masakari-controller
-	
-	.# sudo ./debian/rules binary
-	
-	.# cd masakari/masakari-hostmonitor
-	
-	.# sudo ./debian/rules binary
-	
-	.# cd masakari/masakari-instancemonitor
-	
-	.# sudo ./debian/rules binary
-	
-	.# cd masakari/masakari-processmonitor
-	
-	.# sudo ./debian/rules binary
-	
-
+```bash
+	# cd masakari/masakari-controller
+	# sudo ./debian/rules binary
+	# cd masakari/masakari-hostmonitor
+	# sudo ./debian/rules binary
+	# cd masakari/masakari-instancemonitor
+	# sudo ./debian/rules binary
+	# cd masakari/masakari-processmonitor
+	# sudo ./debian/rules binary
+```
 ## [Installing Masakari Services]
 * Here masakari-controller service will only run in controller and the remaning masakari-hostmonitor,masakari-instancemonitor,masakari-processmonitor will run compute.
 * In controller
-	.# sudo apt-get install build-essential python-dev libmysqlclient-dev libffi-dev libssl-dev python-pip
-	.# pip install -U pip
-	.# cd masakari/masakari-controller
-	.# sudo pip install -r requirements.txt
+```bash
+	# sudo apt-get install build-essential python-dev libmysqlclient-dev libffi-dev libssl-dev python-pip
+	# pip install -U pip
+	# cd masakari/masakari-controller
+	# sudo pip install -r requirements.txt
+```
 	* Create Database for masakari.
-	.# mysql
+```bash
+	# mysql
 		MariaDB [(none)]> CREATE DATABASE vm_ha;
 		MariaDB [(none)]> GRANT ALL PRIVILEGES ON vm_ha.* TO 'vm_ha'@'localhost' \
 		IDENTIFIED BY 'accl';
 		MariaDB [(none)]> GRANT ALL PRIVILEGES ON vm_ha.* TO 'vm_ha'@'%' \
 		IDENTIFIED BY 'accl';
 		MariaDB [(none)]> exit
-	.# cd masakari
-	.# sudo dpkg -i masakari-controller_1.0.0-1_all.deb
-	.# vi /etc/masakari/masakari-controller.conf
+	# cd masakari
+	# sudo dpkg -i masakari-controller_1.0.0-1_all.deb
+	# vi /etc/masakari/masakari-controller.conf
+```
 	* in the db section.
+```conf
 		[db]
 		drivername = mysql
 		host = <controller_ip>
@@ -72,6 +69,7 @@ Steps to follow in masakari installation.
 		charset = utf8
 		lock_retry_max_cnt = 5
 		innodb_lock_wait_timeout = 10
+```
 	* in log section.
 		[log]
 		log_level = debug
