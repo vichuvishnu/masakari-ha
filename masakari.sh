@@ -97,16 +97,18 @@ log_print () {
 #	$2 : Message
 print () {
 	log_level=$1
-	echo_console "$2"
 	case $log_level in
 	1)
 		log_info "$2"
+		echo_console "$2"
 		;;
 	2)
 		log_debug "$2"
+		echo_console "$2"
 		;;
 	3)
 		log_error "$2"
+		echo_error "$2"
 		;;
 	esac
 }
@@ -175,6 +177,15 @@ set_conf_value () {
     LOG_LEVEL=${LOG_LEVEL:-10}
     check_config_type 'string' LOG_LEVEL $LOG_LEVEL
     
+    BIND_IP=${BIND_IP:-""}
+    check_config_type 'string' BIND_IP $BIND_IP
+    
+    COMPUTE1=${COMPUTE1:-""}
+    check_config_type 'string' COMPUTE1 $COMPUTE1
+    
+    COMPUTE2=${COMPUTE2:-""}
+    check_config_type 'string' COMPUTE2 $COMPUTE2
+        
     return 0
 }
 
@@ -208,7 +219,7 @@ echo_default_value () {
 build() {
 	M_COMP=$1
 	#sFNAME="BUILD"
-	BULD_PATH="$MASAKARI_DIR/$M_COMP"
+	BULD_PATH="$TOP_DIR/$M_COMP"
 	echo_console "+++++++++++bulding $M_COMP+++++++++++"
 	cd $BULD_PATH
 	sudo ./debian/rules binary
@@ -239,33 +250,28 @@ create_masakari_database() {
         return $MYSQL_CMD
 }
 
-#This function will clone masakari according to the revision
-#Accoriding to the revision
-#
-mdc_masakari_clone() {
-	#FNAME="mdc_masakari_clone"
-	echo_console "+++++++++++clonnig masakari+++++++++++"
-	cd $TOP_DIR
-	git clone "https://github.com/ntt-sic/masakari.git" --branch $REVISION
-	return $?
-}
-
 #This function will build the required package
-#
-#
-#
+#Output
+#	0 : Success
+#	1 : Failed
 mdc_masakari_build () {
 	#FNAME="mdc_masakari_build"
 	echo_console "+++++++++++bulding masakari+++++++++++"
 	sudo apt-get install python-daemon dpkg-dev debhelper -y
+	if [ $? -ne 0 ]; then print 3 "Error while installing packages python-daemon dpkg-dev debhelper"; return 1; fi
 	sudo useradd -s /bin/bash -d /home/openstack -m openstack
+	if [ $? -ne 0 ]; then print 3 "Error while creating user openstack"; return 1; fi
 	echo "openstack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/openstack
 	if [ $HOST_NAME == "controller" ]; then
 		build "masakari-controller"
+		if [ $? -ne 0 ]; then print 3 "Error while bulding masakari-controller"; return 1; fi
 	elif [ $HOST_NAME == "compute" ]; then
 		build "masakari-hostmonitor"
+		if [ $? -ne 0 ]; then print 3 "Error while bulding masakari-hostmonitor"; return 1; fi
 		build "masakari-instancemonitor"
+		if [ $? -ne 0 ]; then print 3 "Error while bulding masakari-instancemonitor"; return 1; fi
 		build "masakari-processmonitor"
+		if [ $? -ne 0 ]; then print 3 "Error while bulding masakari-processmonitor"; return 1; fi
 	else
 		return 1
 	fi
@@ -283,15 +289,16 @@ mdc_masakari_install () {
 	sudo apt-get install build-essential python-dev libmysqlclient-dev libffi-dev libssl-dev python-pip -y
 	sudo pip install -U pip
 	if [ $HOST_NAME == "controller" ]; then
-		cd $MASAKARI_DIR/masakari-controller
+		cd $CONTROLLER_DIR
 		sudo pip install -r requirements.txt
 		create_masakari_database
-		cd $MASAKARI_DIR
+		cd $TOP_DIR
 		sudo dpkg -i masakari-controller_1.0.0-1_all.deb
 	elif [ $HOST_NAME == "compute" ]; then
 		sudo apt-get install corosync pacemaker -y
 		sudo apt install crm114 -y
 		sudo apt install crmsh -y
+		cd TOP_DIR
 		sudo dpkg -i masakari-hostmonitor_1.0.0-1_all.deb
 		sudo dpkg -i masakari-instancemonitor_1.0.0-1_all.deb
 		sudo dpkg -i masakari-processmonitor_1.0.0-1_all.deb
@@ -310,63 +317,69 @@ mdc_masakari_conf () {
 	echo_console "+++++++++++configuring masakari+++++++++++"
 	if [ $HOST_NAME == "controller" ]; then
 		#masakari controller configuration
-		echo_console "etc/masakari-controller ->  /etc/masakari/masakari-controller.conf"
+		print 1 "etc/masakari-controller ->  /etc/masakari/masakari-controller.conf"
 		sudo cp $TOP_DIR/etc/masakari-controller.conf.sample /etc/masakari/masakari-controller.conf -v
 		sudo sed -i "s/host = <controller_ip>.*/host = $HOST_IP/g" /etc/masakari/masakari-controller.conf
 		
 		#masakari database setting
-		echo_console "etc/masakari_database_setting.sh ->  $TOP_DIR/masakari_database_setting.sh"
+		print 1 "etc/masakari_database_setting.sh ->  $TOP_DIR/masakari_database_setting.sh"
 		sudo cp $TOP_DIR/etc/masakari_database_setting.sh.sample $TOP_DIR/masakari_database_setting.sh -v
 		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST=$HOST_IP/g" $TOP_DIR/masakari_database_setting.sh
 		sudo chmod 0755 $TOP_DIR/masakari_database_setting.sh
 		
 		#masakari reserve host adding
-		echo_console "etc/reserved_host_add.sh ->  $TOP_DIR/reserved_host_add.sh"
+		print 1 "etc/reserved_host_add.sh ->  $TOP_DIR/reserved_host_add.sh"
 		sudo cp $TOP_DIR/etc/reserved_host_add.sh.sample $TOP_DIR/reserved_host_add.sh -v
-		sudo sed -i "s/DB_HOST=<controller ip>.*/host = $HOST_IP/g" $TOP_DIR/reserved_host_add.sh
+		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST = $HOST_IP/g" $TOP_DIR/reserved_host_add.sh
 		sudo chmod 0755 $TOP_DIR/reserved_host_add.sh
 		
 		#masakari reserve host delete
-		echo_console "etc/reserved_host_delete.sh ->  $TOP_DIR/reserved_host_delete.sh"
+		print 1 "etc/reserved_host_delete.sh ->  $TOP_DIR/reserved_host_delete.sh"
 		sudo cp $TOP_DIR/etc/reserved_host_delete.sh.sample $TOP_DIR/reserved_host_delete.sh -v
-		sudo sed -i "s/DB_HOST=<controller ip>.*/host = $HOST_IP/g" $TOP_DIR/reserved_host_delete.sh
+		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST = $HOST_IP/g" $TOP_DIR/reserved_host_delete.sh
 		sudo chmod 0755 $TOP_DIR/reserved_host_delete.sh 
 		
 		#masakari reserve host list
-		echo_console "etc/reserved_host_list.sh ->  $TOP_DIR/reserved_host_list.sh"
+		print 1 "etc/reserved_host_list.sh ->  $TOP_DIR/reserved_host_list.sh"
 		sudo cp $TOP_DIR/etc/reserved_host_list.sh.sample $TOP_DIR/reserved_host_list.sh -v
-		sudo sed -i "s/DB_HOST=<controller ip>.*/host = $HOST_IP/g" $TOP_DIR/reserved_host_list.sh
+		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST = $HOST_IP/g" $TOP_DIR/reserved_host_list.sh
 		sudo chmod 0755 $TOP_DIR/reserved_host_list.sh
 		
 		#masakari reserve host update
-		echo_console "etc/reserved_host_update.sh ->  $TOP_DIR/reserved_host_update.sh"
+		print 1 "etc/reserved_host_update.sh ->  $TOP_DIR/reserved_host_update.sh"
 		sudo cp $TOP_DIR/etc/reserved_host_update.sh.sample $TOP_DIR/reserved_host_update.sh -v
-		sudo sed -i "s/DB_HOST=<controller ip>.*/host = $HOST_IP/g" $TOP_DIR/reserved_host_update.sh
+		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST = $HOST_IP/g" $TOP_DIR/reserved_host_update.sh
 		sudo chmod 0755 $TOP_DIR/reserved_host_update.sh
 	elif [ $HOST_NAME == "compute" ]; then
 		#masakari hostmointor configuration
-		echo_console "etc/masakari-hostmonitor.conf ->  /etc/masakari/masakari-hostmonitor.conf"
+		print 1 "etc/masakari-hostmonitor.conf ->  /etc/masakari/masakari-hostmonitor.conf"
 		sudo cp $TOP_DIR/etc/masakari-hostmonitor.conf.sample /etc/masakari/masakari-hostmonitor.conf -v
-		sudo sed -i 's/RM_URL="http://<controller ip>:15868".*/RM_URL="http://$CONTROLLER_IP:15868"/g' /etc/masakari/masakari-controller.conf
+		sudo sed -i "s/<controller ip>/$CONTROLLER_IP/g" /etc/masakari/masakari-hostmonitor.conf
 		
 		#masakari instancemonitor configuration
-		echo_console "etc/masakari-instancemonitor.conf ->  /etc/masakari/masakari-instancemonitor.conf"
+		print 1 "etc/masakari-instancemonitor.conf ->  /etc/masakari/masakari-instancemonitor.conf"
 		sudo cp $TOP_DIR/etc/masakari-instancemonitor.conf.sample /etc/masakari/masakari-instancemonitor.conf -v
-		sudo sed -i 's/url = http://<controller ip>:15868".*/url = http://$CONTROLLER_IP:15868/g' /etc/masakari/masakari-instancemonitor.conf
+		sudo sed -i "s/<controller ip>/$CONTROLLER_IP/g" /etc/masakari/masakari-instancemonitor.conf
 		
 		#masakari processmonitor configuration
 		echo_console "etc/masakari-processmonitor.conf ->  /etc/masakari/masakari-processmonitor.conf"
 		sudo cp $TOP_DIR/etc/masakari-processmonitor.conf.sample /etc/masakari/masakari-processmonitor.conf -v
-		sudo sed -i 's/RESOURCE_MANAGER_URL="http://<controller ip>:15868".*/RESOURCE_MANAGER_URL="http://$CONTROLLER_IP:15868"/g' /etc/masakari/masakari-processmonitor.conf
+		sudo sed -i "s/<controller ip>/$CONTROLLER_IP/g" /etc/masakari/masakari-processmonitor.conf
 		
 		#masakari process list
-		echo_console "etc/proc.list ->  /etc/masakari/proc.list"
+		print 1 "etc/proc.list ->  /etc/masakari/proc.list"
 		sudo cp $TOP_DIR/etc/proc.list.sample /etc/masakari/proc.list
 		
-		#pacemaker configuration
+		#pacemaker and corosync configuration 
 		echo_console "etc/corosync.conf ->  /etc/corosync/corosync.conf"
 		sudo cp $TOP_DIR/etc/corosync.conf.sample /etc/corosync/corosync.conf -v
-		sudo sed -i 's/bindnetaddr: <bind_ip>".*/RESOURCE_MANAGER_URL="http://$CONTROLLER_IP:15868"/g' /etc/corosync/corosync.conf
+		sudo sed -i "s/bindnetaddr: <bind_ip>.*/bindnetaddr: $BIND_IP/g" /etc/corosync/corosync.conf
+		sudo sed -i "s/<compute1>/$COMPUTE1/g" /etc/corosync/corosync.conf
+		sudo sed -i "s/<compute2>/$COMPUTE2/g" /etc/corosync/corosync.conf
+		
+		
+		echo_console "etc/corosync ->  /etc/default/corosync"
+		sudo cp $TOP_DIR/etc/corosync.sample /etc/default/corosync -v
 	else
 		return -1
 	fi
@@ -433,15 +446,7 @@ print 1 "###########################################################"
 print 1 "####################masakari.sh starts#####################"
 print 1 "###########################################################"
 
-#mdc_masakari_clone
-result=$?
-if [ $result -ne 0 ]; then
-	echo_error "error while cloning."
-	log_error "error while cloning."
-	exit 1
-fi
-
-#mdc_masakari_build
+mdc_masakari_build
 result=$?
 if [ $result -ne 0 ]; then
 	echo_error "error while bulding."
@@ -449,7 +454,7 @@ if [ $result -ne 0 ]; then
 	exit 1
 fi
 
-#mdc_masakari_install
+mdc_masakari_install
 result=$?
 if [ $result -ne 0 ]; then
 	echo_error "error while installing."
@@ -457,7 +462,7 @@ if [ $result -ne 0 ]; then
 	exit 1
 fi
 
-#mdc_masakari_conf
+mdc_masakari_conf
 result=$?
 if [ $result -ne 0 ]; then
 	echo_error "error while seting configuration file."
@@ -476,7 +481,7 @@ if [ $HOST_NAME == "controller" ]; then
 	fi
 fi
 
-#mdc_masakari_start
+mdc_masakari_start
 result=$?
 if [ $result -ne 0 ]; then
 	echo_error "error while starting service."
@@ -499,3 +504,4 @@ print 1 "################################################################"
 
 echo_default_value
 #end
+
