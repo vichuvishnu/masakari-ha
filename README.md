@@ -17,41 +17,41 @@ Steps to follow in masakari installation.
 	.# git clone "https://github.com/ntt-sic/masakari.git"
 
 * Install packages for buliding masakari services.
-	# sudo apt-get install python-daemon dpkg-dev debhelper
+	.# sudo apt-get install python-daemon dpkg-dev debhelper
 
 * Create a user openstack required by masakari with no password .
-	# sudo useradd -s /bin/bash -d /home/openstack -m openstack
-	# echo "openstack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/openstack
+	.# sudo useradd -s /bin/bash -d /home/openstack -m openstack
+	.# echo "openstack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/openstack
 
 ## [Bulding Masakari Packages]
 * Creating Masakari Packages it should be done in both controller and compute nodes.
-	# cd masakari/masakari-controller
-	# sudo ./debian/rules binary
-	# cd masakari/masakari-hostmonitor
-	# sudo ./debian/rules binary
-	# cd masakari/masakari-instancemonitor
-	# sudo ./debian/rules binary
-	# cd masakari/masakari-processmonitor
-	# sudo ./debian/rules binary
+	.# cd masakari/masakari-controller
+	.# sudo ./debian/rules binary
+	.# cd masakari/masakari-hostmonitor
+	.# sudo ./debian/rules binary
+	.# cd masakari/masakari-instancemonitor
+	.# sudo ./debian/rules binary
+	.# cd masakari/masakari-processmonitor
+	.# sudo ./debian/rules binary
 
 ## [Installing Masakari Services]
 * Here masakari-controller service will only run in controller and the remaning masakari-hostmonitor,masakari-instancemonitor,masakari-processmonitor will run compute.
 * In controller
-	# sudo apt-get install build-essential python-dev libmysqlclient-dev libffi-dev libssl-dev python-pip
-	# pip install -U pip
-	# cd masakari/masakari-controller
-	# sudo pip install -r requirements.txt
+	.# sudo apt-get install build-essential python-dev libmysqlclient-dev libffi-dev libssl-dev python-pip
+	.# pip install -U pip
+	.# cd masakari/masakari-controller
+	.# sudo pip install -r requirements.txt
 	* Create Database for masakari.
-	# mysql
+	.# mysql
 		MariaDB [(none)]> CREATE DATABASE vm_ha;
 		MariaDB [(none)]> GRANT ALL PRIVILEGES ON vm_ha.* TO 'vm_ha'@'localhost' \
 		IDENTIFIED BY 'accl';
 		MariaDB [(none)]> GRANT ALL PRIVILEGES ON vm_ha.* TO 'vm_ha'@'%' \
 		IDENTIFIED BY 'accl';
 		MariaDB [(none)]> exit
-	# cd masakari
-	# sudo dpkg -i masakari-controller_1.0.0-1_all.deb
-	# vi /etc/masakari/masakari-controller.conf
+	.# cd masakari
+	.# sudo dpkg -i masakari-controller_1.0.0-1_all.deb
+	.# vi /etc/masakari/masakari-controller.conf
 	* in the db section.
 		[db]
 		drivername = mysql
@@ -72,8 +72,8 @@ Steps to follow in masakari installation.
 		admin_password = accl
 		auth_url =  http://controller:5000/v3
 		project_name = admin
-	# cd masakari/
-	# vi masakari_database_setting.sh
+	.# cd masakari/
+	.# vi masakari_database_setting.sh
 		
 		#!/bin/bash
 
@@ -84,8 +84,8 @@ Steps to follow in masakari installation.
 		cd masakari-controller/db
 		sudo mysql -u${DB_USER} -p${DB_PASSWORD} -h${DB_HOST} -e "source create_vmha_database.sql"
 	
-	# chmod +x masakari_database_setting.sh
-	# vi reserved_host_add.sh
+	.# chmod +x masakari_database_setting.sh
+	.# vi reserved_host_add.sh
 	
 		#!/bin/bash
 
@@ -101,8 +101,8 @@ Steps to follow in masakari installation.
 		--port "${MCASTADDR}:${MCASTPORT}" \
 		--db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
 		--host $*
-	# chmod +x reserved_host_add.sh
-	# vi reserved_host_delete.sh
+	.# chmod +x reserved_host_add.sh
+	.# vi reserved_host_delete.sh
 	
 		#!/bin/bash
 
@@ -118,8 +118,8 @@ Steps to follow in masakari installation.
 		--port "${MCASTADDR}:${MCASTPORT}" \
 		--db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
 		--host $*
-	# chmod +x reserved_host_delete.sh
-	# vi reserved_host_list.sh
+	.# chmod +x reserved_host_delete.sh
+	.# vi reserved_host_list.sh
 		
 		#!/bin/bash
 
@@ -135,8 +135,8 @@ Steps to follow in masakari installation.
 		--port "${MCASTADDR}:${MCASTPORT}" \
 		--db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST}
 
-	# chmod +x reserved_host_list.sh
-	# vi reserved_host_update.sh
+	.# chmod +x reserved_host_list.sh
+	.# vi reserved_host_update.sh
 		
 		#!/bin/bash
 
@@ -152,15 +152,15 @@ Steps to follow in masakari installation.
 		 --port "${MCASTADDR}:${MCASTPORT}" \
 		 --db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
 		 --before-host $1 --after-host $2
-	# chmod +x reserved_host_update.sh	
+	.# chmod +x reserved_host_update.sh	
 	
 * In Compute (in both compute node)
 	** In compute section we need to install corosync and pacemaker
-	# sudo apt-get install corosync pacemaker
-	# vi /etc/default/corosync
+	.# sudo apt-get install corosync pacemaker
+	.# vi /etc/default/corosync
 		# start corosync at boot [yes|no]
 		START=yes
-	# vi /etc/corosync/corosync.conf
+	.# vi /etc/corosync/corosync.conf
 		# Please read the corosync.conf.5 manual page
 		totem {
 			version: 2
@@ -207,23 +207,23 @@ Steps to follow in masakari installation.
 			provider: corosync_votequorum
 			two_node: 1
 		}
-	# sudo service corosync restart
-	# sudo service pacemaker restart
-	# cd masakari
-	# sudo dpkg -i masakari-hostmonitor_1.0.0-1_all.deb
-	# cd masakari
-	# sudo dpkg -i masakari-instancemonitor_1.0.0-1_all.deb
-	# cd masakari
-	# sudo dpkg -i masakari-processmonitor_1.0.0-1_all.deb
-	# sudo apt install crm114
-	# sudo apt install crmsh
-	# vi /etc/masakari/masakari-hostmonitor.conf
+	.# sudo service corosync restart
+	.# sudo service pacemaker restart
+	.# cd masakari
+	.# sudo dpkg -i masakari-hostmonitor_1.0.0-1_all.deb
+	.# cd masakari
+	.# sudo dpkg -i masakari-instancemonitor_1.0.0-1_all.deb
+	.# cd masakari
+	.# sudo dpkg -i masakari-processmonitor_1.0.0-1_all.deb
+	.# sudo apt install crm114
+	.# sudo apt install crmsh
+	.# vi /etc/masakari/masakari-hostmonitor.conf
 		RM_URL="http://<controller ip>:15868"
 		
 		LOG_LEVEL="debug"
-	# vi /etc/masakari/masakari-instancemonitor.conf
+	.# vi /etc/masakari/masakari-instancemonitor.conf
 		url = http://<controller ip>:15868
-	# vi /etc/masakari/masakari-processmonitor.conf
+	.# vi /etc/masakari/masakari-processmonitor.conf
 		RESOURCE_MANAGER_URL="http://<controller ip>:15868"
 		PROCESS_CHECK_INTERVAL=5
 		PROCESS_REBOOT_RETRY=3
@@ -237,12 +237,12 @@ Steps to follow in masakari installation.
 * Finilize Installation
 in controller
 
-	# sudo service masakari-controller restart
+	.# sudo service masakari-controller restart
 	
 in compute
 	
-	# sudo service masakari-hostmonitor restart
+	.# sudo service masakari-hostmonitor restart
 	
-	# sudo service masakari-processmonitor restart
+	.# sudo service masakari-processmonitor restart
 	
-	# sudo service masakari-instancemonitor restart
+	.# sudo service masakari-instancemonitor restart
