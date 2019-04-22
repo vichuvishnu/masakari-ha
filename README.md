@@ -17,22 +17,33 @@ Steps to follow in masakari installation.
 	.# git clone "https://github.com/ntt-sic/masakari.git"
 
 * Install packages for buliding masakari services.
+
 	.# sudo apt-get install python-daemon dpkg-dev debhelper
 
 * Create a user openstack required by masakari with no password .
+
 	.# sudo useradd -s /bin/bash -d /home/openstack -m openstack
+	
 	.# echo "openstack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/openstack
 
 ## [Bulding Masakari Packages]
 * Creating Masakari Packages it should be done in both controller and compute nodes.
 	.# cd masakari/masakari-controller
+	
 	.# sudo ./debian/rules binary
+	
 	.# cd masakari/masakari-hostmonitor
+	
 	.# sudo ./debian/rules binary
+	
 	.# cd masakari/masakari-instancemonitor
+	
 	.# sudo ./debian/rules binary
+	
 	.# cd masakari/masakari-processmonitor
+	
 	.# sudo ./debian/rules binary
+	
 
 ## [Installing Masakari Services]
 * Here masakari-controller service will only run in controller and the remaning masakari-hostmonitor,masakari-instancemonitor,masakari-processmonitor will run compute.
