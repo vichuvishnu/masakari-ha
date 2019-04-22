@@ -177,14 +177,16 @@ set_conf_value () {
     LOG_LEVEL=${LOG_LEVEL:-10}
     check_config_type 'string' LOG_LEVEL $LOG_LEVEL
     
-    BIND_IP=${BIND_IP:-""}
-    check_config_type 'string' BIND_IP $BIND_IP
+    if [ $HOST_NAME == "compute" ]; then
+	BIND_IP=${BIND_IP:-""}
+	check_config_type 'string' BIND_IP $BIND_IP
     
-    COMPUTE1=${COMPUTE1:-""}
-    check_config_type 'string' COMPUTE1 $COMPUTE1
+	COMPUTE1=${COMPUTE1:-""}
+	check_config_type 'string' COMPUTE1 $COMPUTE1
     
-    COMPUTE2=${COMPUTE2:-""}
-    check_config_type 'string' COMPUTE2 $COMPUTE2
+	COMPUTE2=${COMPUTE2:-""}
+	check_config_type 'string' COMPUTE2 $COMPUTE2
+    fi
         
     return 0
 }
@@ -504,4 +506,5 @@ print 1 "################################################################"
 
 echo_default_value
 #end
+
 
