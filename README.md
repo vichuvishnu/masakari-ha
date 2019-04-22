@@ -11,7 +11,9 @@ Steps to follow in masakari installation.
 ## [Environment Bulding]
 * All the environment bulding steps should be done in both controller and compute.
 * Clone the masakari from git repo.
+
 	.$ sudo -s
+	
 	.# git clone "https://github.com/ntt-sic/masakari.git"
 
 * Install packages for buliding masakari services.
