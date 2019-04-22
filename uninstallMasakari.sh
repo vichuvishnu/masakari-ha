@@ -20,9 +20,10 @@ mdc_drop_database() {
         set timeout 3
         spawn mysql
         expect \")]>\"
-        send \"DROP DATABASE vm_ha;\r\"expect \")]>\"
+        send \"DROP DATABASE vm_ha;\r\"
+        expect \")]>\"
         send \"exit\r\"
-        ")
+         ")
 	echo_console "$MYSQL_CMD"
 	return 0
 }
@@ -43,14 +44,14 @@ mdc_uninstall_masakariServices() {
 	echo_console "Unstalling masakari $HOST_NAME services"
 	if [ "$HOST_NAME" == "controller" ]; then
 		echo_console "removing masakari-controller"
-		sudo dpkg --purge masakari-controller -y
+		sudo dpkg --purge masakari-controller
 	elif [ "$HOST_NAME" == "compute" ]; then
 		echo_console "removing masakari-hostmonitor"
-		sudo dpkg --purge masakari-hostmonitor -y 
+		sudo dpkg --purge masakari-hostmonitor 
 		echo_console "removing masakari-instancemonitor"
-		sudo dpkg --purge masakari-instancemonitor -y
+		sudo dpkg --purge masakari-instancemonitor
 		echo_console "removing masakari-processmonitor"
-		sudo dpkg --purge masakari-processmonitor -y
+		sudo dpkg --purge masakari-processmonitor
 		echo_console "removing pacemaker"
 		echo_console "removing corosync"
 		sudo apt-get remove --purge corosync pacemaker -y
@@ -81,4 +82,6 @@ if [ "$HOST_NAME" == "controller" ];then
 fi
 mdc_remove_masakariconif_files
 #end
+
+
 
