@@ -1,6 +1,6 @@
 #[MDCMASAKARI_INSTALLATION]
-edit the local.conf
-run the script 
+edit the local.conf.
+run the script .
 ./masakari.sh
 #[Installation using script]
 
@@ -17,7 +17,7 @@ Steps to follow in masakari installation.
 * Install packages for buliding masakari services.
 	# sudo apt-get install python-daemon dpkg-dev debhelper
 
-* Create a user openstack required by masakari with no password 
+* Create a user openstack required by masakari with no password .
 	# sudo useradd -s /bin/bash -d /home/openstack -m openstack
 	# echo "openstack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/openstack
 
