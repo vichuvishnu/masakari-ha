@@ -1,14 +1,14 @@
-#[MDCMASAKARI_INSTALLATION]
+# [MDCMASAKARI_INSTALLATION]
 edit the local.conf.
 run the script .
 ./masakari.sh
-#[Installation using script]
+# [Installation using script]
 
 
-#[Installation by manually]
+# [Installation by manually]
 Steps to follow in masakari installation.
 
-#[Environment Bulding]
+## [Environment Bulding]
 * All the environment bulding steps should be done in both controller and compute.
 * Clone the masakari from git repo.
 	$ sudo -s
@@ -21,7 +21,7 @@ Steps to follow in masakari installation.
 	# sudo useradd -s /bin/bash -d /home/openstack -m openstack
 	# echo "openstack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/openstack
 
-#[Bulding Masakari Packages]
+## [Bulding Masakari Packages]
 * Creating Masakari Packages it should be done in both controller and compute nodes.
 	# cd masakari/masakari-controller
 	# sudo ./debian/rules binary
@@ -32,7 +32,7 @@ Steps to follow in masakari installation.
 	# cd masakari/masakari-processmonitor
 	# sudo ./debian/rules binary
 
-#[Installing Masakari Services]
+## [Installing Masakari Services]
 * Here masakari-controller service will only run in controller and the remaning masakari-hostmonitor,masakari-instancemonitor,masakari-processmonitor will run compute.
 * In controller
 	# sudo apt-get install build-essential python-dev libmysqlclient-dev libffi-dev libssl-dev python-pip
@@ -153,7 +153,7 @@ Steps to follow in masakari installation.
 	# chmod +x reserved_host_update.sh	
 	
 * In Compute (in both compute node)
-	* In compute section we need to install corosync and pacemaker
+	** In compute section we need to install corosync and pacemaker
 	# sudo apt-get install corosync pacemaker
 	# vi /etc/default/corosync
 		# start corosync at boot [yes|no]
