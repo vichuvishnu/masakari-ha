@@ -1,4 +1,7 @@
 #[MDCMASAKARI_INSTALLATION]
+edit the local.conf
+run the script 
+./masakari.sh
 #[Installation using script]
 
 
