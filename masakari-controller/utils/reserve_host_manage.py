@@ -45,7 +45,7 @@ class reserve_host_manage(object):
 
     def __init__(self):
 
-        parser = argparse.ArgumentParser(prog='reserve_host_manage.py', add_help=False)
+        parser = argparse.ArgumentParser(prog='mdc-masakari', add_help=False)
 
         parser.add_argument('--mode', help='add/update/delete/list')
         parser.add_argument('--port', help='cluster_port')
