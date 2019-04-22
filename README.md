@@ -1,8 +1,8 @@
 # [MDCMASAKARI_INSTALLATION]
 The project is reffer from ntt masakari. For further information you can reffer
-```bash
-https://github.com/ntt-sic/masakari
-```
+
+[1] https://github.com/ntt-sic/masakari
+
 This scritp is under development so it may contain some bugs.To install the masakari you need a healty Openstack environment.It capable of live-migrate,migrate,evacuate
 
 # [Installation using script]
