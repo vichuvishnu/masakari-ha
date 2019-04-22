@@ -234,5 +234,7 @@ in controller
 	# sudo service masakari-controller restart
 in compute
 	# sudo service masakari-hostmonitor restart
+	
 	# sudo service masakari-processmonitor restart
+	
 	# sudo service masakari-instancemonitor restart
