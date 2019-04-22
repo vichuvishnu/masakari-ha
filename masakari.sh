@@ -335,25 +335,25 @@ mdc_masakari_conf () {
 		#masakari reserve host adding
 		print 1 "etc/reserved_host_add.sh ->  $TOP_DIR/reserved_host_add.sh"
 		sudo cp $TOP_DIR/etc/reserved_host_add.sh.sample $TOP_DIR/reserved_host_add.sh -v
-		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST = $HOST_IP/g" $TOP_DIR/reserved_host_add.sh
+		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST=$HOST_IP/g" $TOP_DIR/reserved_host_add.sh
 		sudo chmod 0755 $TOP_DIR/reserved_host_add.sh
 		
 		#masakari reserve host delete
 		print 1 "etc/reserved_host_delete.sh ->  $TOP_DIR/reserved_host_delete.sh"
 		sudo cp $TOP_DIR/etc/reserved_host_delete.sh.sample $TOP_DIR/reserved_host_delete.sh -v
-		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST = $HOST_IP/g" $TOP_DIR/reserved_host_delete.sh
+		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST=$HOST_IP/g" $TOP_DIR/reserved_host_delete.sh
 		sudo chmod 0755 $TOP_DIR/reserved_host_delete.sh 
 		
 		#masakari reserve host list
 		print 1 "etc/reserved_host_list.sh ->  $TOP_DIR/reserved_host_list.sh"
 		sudo cp $TOP_DIR/etc/reserved_host_list.sh.sample $TOP_DIR/reserved_host_list.sh -v
-		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST = $HOST_IP/g" $TOP_DIR/reserved_host_list.sh
+		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST=$HOST_IP/g" $TOP_DIR/reserved_host_list.sh
 		sudo chmod 0755 $TOP_DIR/reserved_host_list.sh
 		
 		#masakari reserve host update
 		print 1 "etc/reserved_host_update.sh ->  $TOP_DIR/reserved_host_update.sh"
 		sudo cp $TOP_DIR/etc/reserved_host_update.sh.sample $TOP_DIR/reserved_host_update.sh -v
-		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST = $HOST_IP/g" $TOP_DIR/reserved_host_update.sh
+		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST=$HOST_IP/g" $TOP_DIR/reserved_host_update.sh
 		sudo chmod 0755 $TOP_DIR/reserved_host_update.sh
 	elif [ $HOST_NAME == "compute" ]; then
 		#masakari hostmointor configuration
@@ -509,3 +509,4 @@ print 1 "################################################################"
 
 echo_default_value
 #end
+
