@@ -355,6 +355,12 @@ mdc_masakari_conf () {
 		sudo cp $TOP_DIR/etc/reserved_host_update.sh.sample $TOP_DIR/reserved_host_update.sh -v
 		sudo sed -i "s/DB_HOST=<controller ip>.*/DB_HOST=$HOST_IP/g" $TOP_DIR/reserved_host_update.sh
 		sudo chmod 0755 $TOP_DIR/reserved_host_update.sh
+		
+		#masakari cli command
+		print 1 "masakari-controller/utils/reserve_host_manage.py ->  /usr/local/bin/mdc-masakari"
+		sudo cp $TOP_DIRmasakari-controller/utils/reserve_host_manage.py /usr/local/bin/mdc-masakari -v
+		sudo chmod 0755 /usr/local/bin/mdc-masakari
+		
 	elif [ $HOST_NAME == "compute" ]; then
 		#masakari hostmointor configuration
 		print 1 "etc/masakari-hostmonitor.conf ->  /etc/masakari/masakari-hostmonitor.conf"
@@ -509,4 +515,5 @@ print 1 "################################################################"
 
 echo_default_value
 #end
+
 
