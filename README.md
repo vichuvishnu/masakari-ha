@@ -61,7 +61,8 @@ $ sudo -s
 # vi /etc/masakari/masakari-controller.conf
 ```
 * edit masakari-controller.conf
-	* in the db section.
+
+* in the db section.
 ```conf
 [db]
 drivername = mysql
@@ -73,12 +74,12 @@ charset = utf8
 lock_retry_max_cnt = 5
 innodb_lock_wait_timeout = 10
 ```
-	* in log section.
+* in log section.
 ```conf
 [log]
 log_level = debug
 ```
-	* in nova section.
+* in nova section.
 ```conf
 [nova]
 domain = Default
