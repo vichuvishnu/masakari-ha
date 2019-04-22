@@ -262,7 +262,7 @@ mdc_masakari_build () {
 	sudo apt-get install python-daemon dpkg-dev debhelper -y
 	if [ $? -ne 0 ]; then print 3 "Error while installing packages python-daemon dpkg-dev debhelper"; return 1; fi
 	check=`sudo less /etc/passwd | grep "/home/openstack" |  cut -d ":" -f1`
-	if [ $check != "openstack" ]; then
+	if [ "$check" != "openstack" ]; then
 		sudo useradd -s /bin/bash -d /home/openstack -m openstack
 		if [ $? -ne 0 ]; then print 3 "Error while creating user openstack"; return 1; fi
 		echo "openstack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/openstack
