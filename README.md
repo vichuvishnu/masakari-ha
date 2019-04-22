@@ -62,7 +62,7 @@ $ sudo -s
 ```
 * edit masakari-controller.conf
 
-** in the db section.
+* in the db section.
 ```conf
 [db]
 drivername = mysql
