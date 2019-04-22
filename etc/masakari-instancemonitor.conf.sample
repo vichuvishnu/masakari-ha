@@ -3,7 +3,7 @@
 #
 [callback]
 # Event notification destination URL
-url = http://<controller ip>:15868"
+url = "http://<controller ip>:15868"
 # Number of retries when the notification processing is error
 retry = 12
 # Trial interval of time of the notification processing is error(in seconds)
