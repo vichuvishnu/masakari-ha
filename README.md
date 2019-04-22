@@ -84,10 +84,12 @@ Steps to follow in masakari installation.
 	auth_url =  http://controller:5000/v3
 	project_name = admin
 ```
+* create database setting script
 ```bash
 # cd masakari/
 # vi masakari_database_setting.sh
 ```
+edit masakari_database_setting.sh file
 ```bash
 	#!/bin/bash
 
@@ -98,10 +100,12 @@ Steps to follow in masakari installation.
 	cd masakari-controller/db
 	sudo mysql -u${DB_USER} -p${DB_PASSWORD} -h${DB_HOST} -e "source create_vmha_database.sql"
 ```
+change masakari_database_setting.sh script to execuitable mode
 ```bash
 # chmod +x masakari_database_setting.sh
 # vi reserved_host_add.sh
 ```
+edit reserved_host_add.sh file
 ```bash
 	#!/bin/bash
 
@@ -118,10 +122,12 @@ Steps to follow in masakari installation.
 	--db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
 	--host $*
 ```
+change reserved_host_add.sh script to execuitable mode
 ```bash
 # chmod +x reserved_host_add.sh
 # vi reserved_host_delete.sh
 ```
+edit reserved_host_delete.sh file
 ```bash
 	#!/bin/bash
 
@@ -137,10 +143,13 @@ Steps to follow in masakari installation.
 	--port "${MCASTADDR}:${MCASTPORT}" \
 	--db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
 	--host $*
+```
+change reserved_host_delete.sh script to execuitable mode
 ```bash
 # chmod +x reserved_host_delete.sh
 # vi reserved_host_list.sh
 ```
+edit reserved_host_list.sh file
 ```bash
 	#!/bin/bash
 
@@ -156,10 +165,12 @@ Steps to follow in masakari installation.
 	--port "${MCASTADDR}:${MCASTPORT}" \
 	--db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST}
 ```
+change reserved_host_list.sh script to execuitable mode
 ```bash
 # chmod +x reserved_host_list.sh
 # vi reserved_host_update.sh
 ```
+edit reserved_host_update.sh file
 ```bash
 	#!/bin/bash
 
@@ -176,6 +187,7 @@ Steps to follow in masakari installation.
 	 --db-user ${DB_USER} --db-password ${DB_PASSWORD} --db-host ${DB_HOST} \
 	 --before-host $1 --after-host $2
 ```
+change reserved_host_update.sh script to execuitable mode
 ```bash
 # chmod +x reserved_host_update.sh	
 ```
