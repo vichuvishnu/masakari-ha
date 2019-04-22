@@ -303,7 +303,7 @@ mdc_masakari_install () {
 		sudo apt-get install corosync pacemaker -y
 		sudo apt install crm114 -y
 		sudo apt install crmsh -y
-		cd TOP_DIR
+		cd $TOP_DIR
 		sudo dpkg -i masakari-hostmonitor_1.0.0-1_all.deb
 		sudo dpkg -i masakari-instancemonitor_1.0.0-1_all.deb
 		sudo dpkg -i masakari-processmonitor_1.0.0-1_all.deb
