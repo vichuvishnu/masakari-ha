@@ -261,9 +261,12 @@ mdc_masakari_build () {
 	echo_console "+++++++++++bulding masakari+++++++++++"
 	sudo apt-get install python-daemon dpkg-dev debhelper -y
 	if [ $? -ne 0 ]; then print 3 "Error while installing packages python-daemon dpkg-dev debhelper"; return 1; fi
-	sudo useradd -s /bin/bash -d /home/openstack -m openstack
-	if [ $? -ne 0 ]; then print 3 "Error while creating user openstack"; return 1; fi
-	echo "openstack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/openstack
+	check=`sudo less /etc/passwd | grep "/home/openstack" |  cut -d ":" -f1`
+	if [ $check != "openstack" ]; then
+		sudo useradd -s /bin/bash -d /home/openstack -m openstack
+		if [ $? -ne 0 ]; then print 3 "Error while creating user openstack"; return 1; fi
+		echo "openstack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/openstack
+	fi
 	if [ $HOST_NAME == "controller" ]; then
 		build "masakari-controller"
 		if [ $? -ne 0 ]; then print 3 "Error while bulding masakari-controller"; return 1; fi
