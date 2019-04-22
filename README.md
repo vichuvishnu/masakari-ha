@@ -9,8 +9,10 @@ This scritp is under development so it may contain some bugs.To install the masa
 edit the local.conf.
 run the script.
 ```bash
-sudo -s
-./masakari.sh
+$ sudo -s
+# git clone https://github.com/vichuvishnu/mdcMasakari
+# cd mdcMasakari
+# ./masakari.sh
 ```
 # [Installation by manually]
 Steps to follow in masakari installation.
