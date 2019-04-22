@@ -263,25 +263,44 @@ get_mcast_nic () {
     fi
 
     S_LINES=`cat ${TMP_IFCONFIG_FILE} | grep -n -e "^[a-z]" -e "^[0-9]" | cut -d":" -f1`
+    #log_debug "S_LINES:$S_LINES"
     E_LINE_DEFAULT=`cat -n ${TMP_IFCONFIG_FILE} | tail -n 1 | awk '{print $1}'`
+    #log_debug "E_LINE_DEFAULT:$E_LINE_DEFAULT"
+    #log_debug "S_LINE:$S_LINE"
+    count=-1
     for S_LINE in ${S_LINES}
     do
         S_LINE=`expr ${S_LINE} + 1`
+	count=`expr $count + 1`
+	#log_debug "S_LINE:$S_LINE"
         E_LINE=`cat ${TMP_IFCONFIG_FILE} | tail -n +${S_LINE} | egrep -n -m 1 -e "^[a-z]" -e "^[0-9]" | cut -d":" -f1`
-
+        #log_debug "E_LINE:$E_LINE"
         if [ -z "${E_LINE}" ]; then
             E_LINE=${E_LINE_DEFAULT}
+	    #log_debug "E_LINE:$E_LINE"
         else
             E_LINE=`expr ${S_LINE} + ${E_LINE} - 1 - 1`
+	    #log_debug "E_LINE:$E_LINE"
         fi
 
         if [ `cat ${TMP_IFCONFIG_FILE} | sed -n "${S_LINE},${E_LINE}p" | grep "${BIND_NET_ADDR}" | wc -l` -ne 0 ]; then
+	    #log_debug "S_LINE value in if:$S_LINE"
+	    #log_debug "E_LINE value in if:$E_LINE"
+	    #log_debug "BIND_NET_ADDR in if:$BIND_NET_ADDR"
+	    #log_debug "count::$count"
             break
         fi
     done
 
     S_LINE=`expr ${S_LINE} - 1`
-    MCAST_NIC=`cat -n ${TMP_IFCONFIG_FILE} | grep " ${S_LINE}" | awk '{print $2}'`
+    #log_debug "s line final value : $S_LINE"
+    #MCAST_NIC=`cat -n ${TMP_IFCONFIG_FILE} | grep " ${S_LINE}" | awk '{print $2}'`
+    #MCAST_NIC=`cat -n ${TMP_IFCONFIG_FILE} | grep " ${S_LINE}" | awk '{print $2}'| grep : | cut -d ":" -f1`
+    mcast=`cat -n ${TMP_IFCONFIG_FILE} | awk '{print $2}'| grep : | cut -d ":" -f1`
+    MCAST=(`echo ${mcast}`)
+    #log_debug "MCAST=${MCAST[$count]}"
+    #log_debug "mcast::$mcast"
+    MCAST_NIC=${MCAST[$count]}
 
     return 0
 }
@@ -350,7 +369,7 @@ check_hb_line () {
         log_debug "read mcast port from ${HA_CONF} -> ${MCAST_PORT}"
         log_debug "read mcast nic from ${HA_CONF} -> ${MCAST_NIC}"
 
-        timeout $TCPDUMP_TIMEOUT sudo tcpdump -c 1 -p -i ${MCAST_NIC} port ${MCAST_PORT} > /dev/null 2>&1
+        #timeout $TCPDUMP_TIMEOUT sudo tcpdump -c 1 -p -i ${MCAST_NIC} port ${MCAST_PORT} > /dev/null 2>&1
         result=$?
         if [ $result -eq 0 ]; then
             NIC_SUCCESS_FLG=1
@@ -479,7 +498,8 @@ count_cluster_nodes () {
     fi
 
     # Count the number of except for Online, OFFLINE node.
-    other_nodes=`cat $TMP_CRM_MON_FILE | grep ^Node | grep -v Attributes | sed -e 's/\s\{1,\}/ /g' | cut -d" " -f2`
+    nodes=`cat $TMP_CRM_MON_FILE | grep ^Node | grep -v Attributes | sed -e 's/\s\{1,\}/ /g' | cut -d" " -f2`
+    other_nodes=`echo "$nodes" | cut -d ":" -f1`
     log_debug "other nodes : $other_nodes"
     if [ -n "$other_nodes" ]; then
         nodes_array+=(`echo $other_nodes`)
@@ -503,7 +523,9 @@ check_node_status () {
     # Check whether the node of argument is "Online".
     if [ "`echo $online_nodes | grep -e "$1 " -e "$1$"`" ]; then
         # Check whether the node of state of all RA is "Started".
+	log_debug "RA_COUNT:$RA_COUNT"
         START_RA_COUNT=`grep "Started $1 " $TMP_CRM_MON_FILE | grep -v stonith | wc -l`
+	log_debug "START_RA_COUNT:$START_RA_COUNT"
         if [ $START_RA_COUNT -eq $RA_COUNT ] || [ $RA_COUNT -eq -1 ]  ; then
             # Node is online and state of all RA is "Started"(startup state)
             return 0
@@ -519,6 +541,10 @@ check_node_status () {
             return 2
         # "UNCLEAN" or "OFFLINE" or "pending" or "standby"(stopped)
         else
+	    log_debug "STATUS_FILE:::`cat $STATUS_FILE`"
+	    node=`echo "$1" | cut -d ":" -f1`
+	    old_node_status=`grep "$node " $STATUS_FILE | cut -d" " -f2`
+	    log_debug "old node status in check node status function:$1:$old_node_status" 
             return 1
         fi
     fi
@@ -555,13 +581,15 @@ parse_node_status () {
     if [ $# -eq 0 ]; then
         return 0
     fi
-
+    log_debug "node name:$1"
     work_count=$#
     n=0
     while [ $n -lt $work_count ]
     do
+	log_debug "node name:$1"
         check_node_status $1
         result1=$?
+	log_debug "output from check node status:$result1"
         if [ $result1 -eq 0 ]; then
             EVENT_TYPE="1"
             START_TIME=`date +'%Y%m%d%H%M%S'`
@@ -571,19 +599,28 @@ parse_node_status () {
             START_TIME=`date +'%Y%m%d%H%M%S'`
             END_TIME="null"
         fi
+	old_node_status=`grep "$1 " $STATUS_FILE | cut -d" " -f2`
+	log_debug "old_node_status:$1:$old_node_status"
         compare_status_file $1 $result1
         result2=$?
         if [ $result2 -eq 1 ]; then
+	    log_debug "Change Occured..."
+            log_debug "Notfication is Required..."
             mkdir -p $JSON_DIR
             JSON_FILE="${JSON_DIR}/${BASE_NAME}_$1.json"
             make_notice_data $1 > $JSON_FILE
             send_to_rm $1 $JSON_FILE
+	    #msg_send=$?
         fi
         shift
         n=`expr $n + 1`
     done
-
-    return 0
+   #log_debug "msg_send=$msg_send"
+   #if [ $msg_send -eq 0 ];then
+   #    return 1
+   #else
+       return 0 
+   #fi
 }
 
 # This function compares state of last node with state of this time node,
@@ -599,14 +636,17 @@ parse_node_status () {
 #   2 : There is change from the last state and notification to the resource is not required.
 compare_status_file () {
     # Check whether state of this time node changed from state of last time node.
+    file=`cat $STATUS_FILE`
+    log_debug "status file:$file"
+    #node=`echo "$1" | cut -d ":" -f1`
     last_node_status=`grep "$1 " $STATUS_FILE | cut -d" " -f2`
-
+    log_debug "last_node_status:$last_node_status"
     # If node name that does not exist in the node state file, add it's node name to the file.
     if [ ! -n "$last_node_status" ]; then
         append_status_file $1 $2
         return 2
     fi
-
+    
     if [ $2 -eq 0 ]; then
         # If state of this time node is "Started" and state of last time node is "Started",
         if [ $last_node_status = $NODE_STATUS_STARTED ]; then
@@ -696,7 +736,8 @@ make_notice_data () {
     L_HOST=""
     P_HOST=`echo ${TMP_RULE} | awk '{print $5}'`
     if [ ${STONITH_TYPE} = "ssh"  ] ; then
-       P_HOST=$1
+       #P_HOST=$1
+       P_HOST=`echo "$1" | cut -d ":" -f1`
     fi
 
     # Usually, the route which shuldn't pass
@@ -965,6 +1006,7 @@ do
     jobsrunning=0
     n=0
     m=0
+    refresh=0
     # Loop processing is executed only by the MAX_CHILD_PROCESS.
     while [ $jobsrunning -lt $MAX_CHILD_PROCESS ]
     do
@@ -999,16 +1041,28 @@ do
                 n=`expr $n + 1`
             done
         fi
-        parse_node_status $param &
+        parse_node_status $param 
+	#output=$?
+	#log_debug "output:$output"
+	#if [ $output -eq 1 ]; then
+	#    refresh=` expr $refresh + 1 `
+	#    log_debug "refresh=$refresh"
+	#fi
         jobsrunning=`expr $jobsrunning + 1`
     done
     wait
 
     log_debug "`cat $STATUS_FILE`"
-
-    script_finalize 1
+    #log_debug "refresh=$refresh"
+    #if [ $refresh -eq 0 ]; then
+    	script_finalize 1
+    #else
+    #	script_finalize 0
+    #fi
     sleep $MONITOR_INTERVAL
 done
 
 log_info "end"
+
+
 
