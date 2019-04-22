@@ -231,8 +231,11 @@ Steps to follow in masakari installation.
 		LOG_LEVEL="info"
 * Finilize Installation
 in controller
+
 	# sudo service masakari-controller restart
+	
 in compute
+	
 	# sudo service masakari-hostmonitor restart
 	
 	# sudo service masakari-processmonitor restart
