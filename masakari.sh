@@ -470,7 +470,7 @@ print 1 "###########################################################"
 print 1 "####################masakari.sh starts#####################"
 print 1 "###########################################################"
 
-#mdc_masakari_build
+mdc_masakari_build
 result=$?
 if [ $result -ne 0 ]; then
 	echo_error "error while bulding."
@@ -478,7 +478,7 @@ if [ $result -ne 0 ]; then
 	exit 1
 fi
 
-#mdc_masakari_install
+mdc_masakari_install
 result=$?
 if [ $result -ne 0 ]; then
 	echo_error "error while installing."
@@ -486,7 +486,7 @@ if [ $result -ne 0 ]; then
 	exit 1
 fi
 
-#mdc_masakari_conf
+mdc_masakari_conf
 result=$?
 if [ $result -ne 0 ]; then
 	echo_error "error while seting configuration file."
@@ -505,7 +505,7 @@ if [ $HOST_NAME == "controller" ]; then
 	fi
 fi
 
-#mdc_masakari_start
+mdc_masakari_start
 result=$?
 if [ $result -ne 0 ]; then
 	echo_error "error while starting service."
