@@ -1,1 +1,22 @@
+[default]
+# IP of recovery controller
+CONTROLLER_IP="192.168.1.190"
 
+# IP of the host server
+HOST_IP="192.168.1.190"
+
+# Host name value should be controller/compute according to the host server
+HOST_NAME="controller"
+
+# Masakari version currently do not change it . Script is in development so use master version
+REVISION="master"
+
+LOG_LEVEL=debug
+
+[corosync]
+# Bind address
+BIND_IP="192.168.1.1"
+
+# Compute1 and Compute2 address
+COMPUTE1="192.168.1.191"
+COMPUTE2="192.168.1.192"
