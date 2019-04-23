@@ -27,20 +27,3 @@ logging {
 		debug: on
 	}
 }
-
-nodelist {
-	node {
-		ring0_addr: <compute1>
-		nodeid: 1
-	}
-	node {
-		ring0_addr: <compute2>
-		nodeid: 2
-	}
-}
-quorum {
-	# Enable and configure quorum subsystem (default: off)
-	# see also corosync.conf.5 and votequorum.5
-	provider: corosync_votequorum
-	two_node: 1
-}
