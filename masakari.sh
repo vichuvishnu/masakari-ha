@@ -180,12 +180,10 @@ set_conf_value () {
     if [ $HOST_NAME == "compute" ]; then
 	BIND_IP=${BIND_IP:-""}
 	check_config_type 'string' BIND_IP $BIND_IP
-    
-	COMPUTE1=${COMPUTE1:-""}
-	check_config_type 'string' COMPUTE1 $COMPUTE1
-    
-	COMPUTE2=${COMPUTE2:-""}
-	check_config_type 'string' COMPUTE2 $COMPUTE2
+	
+	CLUSTER_NODES=${CLUSTER_NODES:-""}
+	check_config_type 'string' CLUSTER_NODES $CLUSTER_NODES
+	IFS=', ' read -r -a COMPUTE <<< "$CLUSTER_NODES"
     fi
         
     return 0
@@ -385,9 +383,24 @@ mdc_masakari_conf () {
 		echo_console "etc/corosync.conf ->  /etc/corosync/corosync.conf"
 		sudo cp $TOP_DIR/etc/corosync.conf.sample /etc/corosync/corosync.conf -v
 		sudo sed -i "s/bindnetaddr: <bind_ip>.*/bindnetaddr: $BIND_IP/g" /etc/corosync/corosync.conf
-		sudo sed -i "s/<compute1>/$COMPUTE1/g" /etc/corosync/corosync.conf
-		sudo sed -i "s/<compute2>/$COMPUTE2/g" /etc/corosync/corosync.conf
-		
+		size=${#COMPUTE[@]}
+		echo "nodelist {" >> /etc/corosync/corosync.conf
+		c=0
+		while [ $c -lt $size ]
+		do
+		echo "	node {
+			ring0_addr: ${COMPUTE[$c]}
+			nodeid:` expr $c + 1 ` 
+		}" >> /etc/corosync/corosync.conf
+		c=` expr $c + 1 `
+		done
+		echo "}" >> /etc/corosync/corosync.conf
+		echo "quorum {
+		# Enable and configure quorum subsystem (default: off)
+		# see also corosync.conf.5 and votequorum.5
+		provider: corosync_votequorum
+		two_node: 1
+	}" >> /etc/corosync/corosync.conf
 		
 		echo_console "etc/corosync ->  /etc/default/corosync"
 		sudo cp $TOP_DIR/etc/corosync.sample /etc/default/corosync -v
@@ -457,7 +470,7 @@ print 1 "###########################################################"
 print 1 "####################masakari.sh starts#####################"
 print 1 "###########################################################"
 
-mdc_masakari_build
+#mdc_masakari_build
 result=$?
 if [ $result -ne 0 ]; then
 	echo_error "error while bulding."
@@ -465,7 +478,7 @@ if [ $result -ne 0 ]; then
 	exit 1
 fi
 
-mdc_masakari_install
+#mdc_masakari_install
 result=$?
 if [ $result -ne 0 ]; then
 	echo_error "error while installing."
@@ -473,7 +486,7 @@ if [ $result -ne 0 ]; then
 	exit 1
 fi
 
-mdc_masakari_conf
+#mdc_masakari_conf
 result=$?
 if [ $result -ne 0 ]; then
 	echo_error "error while seting configuration file."
@@ -492,7 +505,7 @@ if [ $HOST_NAME == "controller" ]; then
 	fi
 fi
 
-mdc_masakari_start
+#mdc_masakari_start
 result=$?
 if [ $result -ne 0 ]; then
 	echo_error "error while starting service."
@@ -515,5 +528,8 @@ print 1 "################################################################"
 
 echo_default_value
 #end
+
+
+
 
 
