@@ -64,9 +64,11 @@ mdc_remove_masakariconif_files() {
 		sudo rm masakari-controller_1.0.0-1_all.deb masakari_database_setting.sh reserved_host_add.sh reserved_host_delete.sh reserved_host_list.sh reserved_host_update.sh
 		sudo rm -r /etc/masakari
 		sudo rm /usr/local/bin/mdc-masakari
+		sudo rm -r /etc/masakari
 	elif [ "$HOST_NAME" == "compute" ]; then
 		sudo rm -r /etc/corosync
 		sudo rm /etc/default/corosync
+		sudo rm -r /etc/masakari
 		sudo rm masakari-hostmonitor_1.0.0-1_all.deb masakari-instancemonitor_1.0.0-1_all.deb masakari-processmonitor_1.0.0-1_all.deb
 	fi
 }
