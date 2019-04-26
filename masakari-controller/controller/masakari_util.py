@@ -741,7 +741,7 @@ class RecoveryControllerUtilApi(object):
                    (uuid, targethost))
             LOG.info(msg)
             self.nova_client.servers.evacuate(uuid, host=targethost,
-                                              on_shared_storage=True)
+                                              on_shared_storage=False)
 
         except exceptions.ClientException as e:
             msg = ('Fails to call Instance Evacuate API onto %s: %s'
