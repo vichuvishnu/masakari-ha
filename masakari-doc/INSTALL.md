@@ -2,13 +2,13 @@
 
 New masakari service will contain
 1) Masakari controller services.
-	|_ masakari-api
-	|_ masakari-engine
-	|_ masakari-wsgi
+	* masakari-api
+	* masakari-engine
+	* masakari-wsgi
 2) Masakari compute services.
-	|_ masakari-hostmonitor
-	|_ masakari-instancemonitor
-	|_ masakari-processmonitor
+	* masakari-hostmonitor
+	* masakari-instancemonitor
+	* masakari-processmonitor
 3) Masakari dashboard support.
 4) Masakari cli commands.
 
