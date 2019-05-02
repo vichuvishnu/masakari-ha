@@ -27,6 +27,7 @@ git clone https://github.com/openstack/masakari.git --branch stable/rocky
 git clone https://github.com/openstack/masakari-dashboard --branch stable/rocky
 ```
 * Create database.
+	* Use the database access client to connect to the database server as the root user:
 ```bash
 mysql
 
