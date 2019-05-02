@@ -32,3 +32,11 @@ git clone https://github.com/openstack/masakari-dashboard --branch stable/rocky
 mysql
 
 ```
+	* Create the masakari databases:
+```bash
+MariaDB [(none)]> CREATE DATABASE masakari;
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON masakari.* TO 'masakari'@'localhost' \
+  IDENTIFIED BY 'MASAKARI_DBPASS';
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON masakari.* TO 'masakari'@'%' \
+  IDENTIFIED BY 'MASAKARI_DBPASS';
+```
