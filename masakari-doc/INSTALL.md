@@ -82,3 +82,12 @@ $ sudo mkdir /var/log/masakari
 $ sudo cp etc/masakari/api-paste.ini /etc/masakari/api-paste.ini -v
 $ sudo cp etc/masakari/masakari.conf /etc/masakari/api-paste.ini -v
 ```
+* Edit the configuration file, sample is in the same directory.
+* After running setup.py for masakari (sudo python setup.py install), run masakari-manage command to sync the database
+```bash
+masakari-manage db sync
+```
+* Run the enableService.sh script to enable to masakari service with parameter controller.
+```bash
+./enableService.sh controller
+```
