@@ -24,4 +24,10 @@ In controller for installing masakari we have to follow some main steps
 * Clone masakari from git hub.
 ```bash
 git clone https://github.com/openstack/masakari.git --branch stable/rocky
+git clone https://github.com/openstack/masakari-dashboard --branch stable/rocky
+```
+* Create database.
+```bash
+mysql
+
 ```
