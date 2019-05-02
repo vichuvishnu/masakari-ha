@@ -89,5 +89,12 @@ masakari-manage db sync
 ```
 * Run the enableService.sh script to enable to masakari service with parameter controller.
 ```bash
-./enableService.sh controller
+$ sudo -s
+# ./enableService.sh controller
+```
+* Finilize Masakari Controller Service Installation.
+```bash
+# service masakari-api restart
+# service masakari-engine restart
+# service masakari-wsgi restart
 ```
