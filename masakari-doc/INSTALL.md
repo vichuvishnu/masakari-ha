@@ -30,9 +30,8 @@ git clone https://github.com/openstack/masakari-dashboard --branch stable/rocky
 	* Use the database access client to connect to the database server as the root user:
 ```bash
 mysql
-
 ```
-	* Create the masakari databases:
+* Create the masakari databases:
 ```bash
 MariaDB [(none)]> CREATE DATABASE masakari;
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON masakari.* TO 'masakari'@'localhost' \
