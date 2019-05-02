@@ -98,3 +98,6 @@ $ sudo -s
 # service masakari-engine restart
 # service masakari-wsgi restart
 ```
+## In Compute
+To install masakari compute services there is a basic environment consist of corosync and pacemaker .
+How to install corosync and pacemaker is not explained here
