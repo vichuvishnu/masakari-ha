@@ -26,11 +26,13 @@ In controller for installing masakari we have to follow some main steps
 git clone https://github.com/openstack/masakari.git --branch stable/rocky
 git clone https://github.com/openstack/masakari-dashboard --branch stable/rocky
 ```
+
 * Create database.
 	* Use the database access client to connect to the database server as the root user:
 ```bash
 mysql
 ```
+
 * Create the masakari databases:
 ```bash
 MariaDB [(none)]> CREATE DATABASE masakari;
@@ -38,4 +40,30 @@ MariaDB [(none)]> GRANT ALL PRIVILEGES ON masakari.* TO 'masakari'@'localhost' \
   IDENTIFIED BY 'MASAKARI_DBPASS';
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON masakari.* TO 'masakari'@'%' \
   IDENTIFIED BY 'MASAKARI_DBPASS';
+```
+
+* Create masakari user:
+```bash
+openstack user create --password-prompt masakari
+(give password as masakari)
+```
+
+* Add admin role to masakari user:
+```bash
+openstack role add --project service --user masakari admin
+```
+
+* Create new service:
+```bash
+openstack service create --name masakari --description "masakari high availability" instance-ha
+```
+
+* Create endpoint for masakari service:
+```bash
+openstack endpoint create --region RegionOne \
+  compute public http://controller:15868/v1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne \
+  compute internal http://controller:15868/v1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne \
+  compute admin http://controller:15868/v1/%\(tenant_id\)s
 ```
