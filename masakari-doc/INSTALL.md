@@ -44,26 +44,41 @@ MariaDB [(none)]> GRANT ALL PRIVILEGES ON masakari.* TO 'masakari'@'%' \
 
 * Create masakari user:
 ```bash
-openstack user create --password-prompt masakari
+$ openstack user create --password-prompt masakari
 (give password as masakari)
 ```
 
 * Add admin role to masakari user:
 ```bash
-openstack role add --project service --user masakari admin
+$ openstack role add --project service --user masakari admin
 ```
 
 * Create new service:
 ```bash
-openstack service create --name masakari --description "masakari high availability" instance-ha
+$ openstack service create --name masakari --description "masakari high availability" instance-ha
 ```
 
 * Create endpoint for masakari service:
 ```bash
-openstack endpoint create --region RegionOne \
+$ openstack endpoint create --region RegionOne \
   compute public http://controller:15868/v1/%\(tenant_id\)s
-openstack endpoint create --region RegionOne \
+$ openstack endpoint create --region RegionOne \
   compute internal http://controller:15868/v1/%\(tenant_id\)s
-openstack endpoint create --region RegionOne \
+$ openstack endpoint create --region RegionOne \
   compute admin http://controller:15868/v1/%\(tenant_id\)s
+```
+
+* To install masakari run setup.py from masakari
+```bash
+$ sudo python setup.py install
+```
+* Create directory /etc/masakari for keep configuration files and log directory
+```bash
+$ sudo mkdir /etc/masakari
+$ sudo mkdir /var/log/masakari
+```
+* Copy masakari.conf, api-paste.ini file from masakari/etc/ to /etc/masakari folder
+```bash
+$ sudo cp etc/masakari/api-paste.ini /etc/masakari/api-paste.ini -v
+$ sudo cp etc/masakari/masakari.conf /etc/masakari/api-paste.ini -v
 ```
