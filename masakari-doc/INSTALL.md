@@ -61,11 +61,11 @@ $ openstack service create --name masakari --description "masakari high availabi
 * Create endpoint for masakari service:
 ```bash
 $ openstack endpoint create --region RegionOne \
-  compute public http://controller:15868/v1/%\(tenant_id\)s
+  masakari public http://controller:15868/v1/%\(tenant_id\)s
 $ openstack endpoint create --region RegionOne \
-  compute internal http://controller:15868/v1/%\(tenant_id\)s
+  masakari internal http://controller:15868/v1/%\(tenant_id\)s
 $ openstack endpoint create --region RegionOne \
-  compute admin http://controller:15868/v1/%\(tenant_id\)s
+  masakari admin http://controller:15868/v1/%\(tenant_id\)s
 ```
 
 * To install masakari run setup.py from masakari
