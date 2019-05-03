@@ -1,0 +1,86 @@
+#!/bin/bash
+
+SCRIPT_DIR=/usr/local/bin/
+SCRIPT_FILE=$SCRIPT_DIR/<SCRIPT_FILE>
+PROGRAM_NAME=<PROGRAM_NAME>
+USER=root
+
+start_script () {
+    status_script
+    # If has already started, going to terminate.
+    if [ $? -eq 0 ]; then
+        echo "$PROGRAM_NAME start/running, process $PID" >&2
+        return
+    fi
+
+    # Execute script.
+    su - $USER -c "bash $SCRIPT_FILE" 1>/dev/null 2>&1 &
+
+    cnt=0
+    while [ $cnt -lt 10 ]
+    do
+        status_script
+        if [ $? -eq 0 ]; then
+            echo "$PROGRAM_NAME start/running, process $PID" >&2
+            break
+        fi
+        cnt=`expr $cnt + 1`
+    done
+
+    if [ $cnt -eq 10 ]; then
+        echo "$PROGRAM_NAME stop/waiting (error)" >&2
+    fi
+}
+
+stop_script () {
+    status_script
+    # If has already stopped, going to terminate.
+    if [ $? -eq 1 ]; then
+        echo "$PROGRAM_NAME stop/waiting" >&2
+        return
+    fi
+
+    sudo kill -9 $PID
+
+    echo "$PROGRAM_NAME stop/waiting" >&2
+}
+
+status_script () {
+    PID=`ps -aef | grep "bash $SCRIPT_FILE" | grep -v grep | grep -v "su -" | awk '{print $2}'`
+    if [ -n "$PID" ]; then
+        # Starting
+        return 0
+    else
+        # Stopping
+        return 1
+    fi
+}
+
+EXIT_STATUS=0
+case $1 in
+    start)
+        start_script
+        ;;
+    stop)
+        stop_script
+        ;;
+    status)
+        status_script
+        if [ $? -eq 0 ]; then
+            echo "$PROGRAM_NAME start/running, process $PID" >&2
+        else
+            echo "$PROGRAM_NAME stop/waiting" >&2
+            EXIT_STATUS=3       # not running
+        fi
+        ;;
+    restart)
+        stop_script
+        start_script
+        ;;
+    *)
+        echo "Usage : $0 {start|stop|status|restart}" >&2
+        EXIT_STATUS=1
+        ;;
+esac
+exit $EXIT_STATUS
+
