@@ -100,4 +100,38 @@ $ sudo -s
 ```
 ## In Compute
 To install masakari compute services there is a basic environment consist of corosync and pacemaker .
-How to install corosync and pacemaker is not explained here
+Steps to follow while installing masakari in compute.
+1) Clone masakari from git hub.
+2) Install masakari.
+3) Create configuration files.
+
+* Clone masakari from git hub.
+```bash
+$ git clone https://github.com/openstack/masakari-monitors.git --branch stable/rocky
+```
+* Create masakarimonitors directory in /etc/.
+* Run setup.py from masakari-monitors:
+```bash
+$ sudo python setup.py install
+```
+* Copy masakarimonitors.conf and process_list.yaml files from masakari-monitors/etc/ to /etc/masakarimonitors folder and make necessary changes to the masakarimonitors.conf and process_list.yaml files. To generate the sample masakarimonitors.conf file, run the following command from the top level of the masakari-monitors directory:
+```bash
+$ tox -egenconfig
+```
+* While running the tox -egenconfig if any error occur the run the masakarireq.sh script and then again run tox -egenconfig
+```bash
+$ sudo -s
+# ./masakarireq.sh
+```
+* Run the enableService.sh script to enable to masakari service with parameter compute.
+```bash
+$ sudo -s
+# ./enableService.sh compute
+```
+* Finilize Masakari Controller Service Installation.
+```bash
+# service masakari-hostmonitor restart
+# service masakari-processmonitor restart
+# service masakari-instancemonitor restart
+```
+
