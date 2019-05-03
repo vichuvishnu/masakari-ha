@@ -32,25 +32,25 @@ echo_console() {
 #	$1 : 0 : controller
 #	   : 1 : compute
 copy_services() {
-	choice= $1
+	choice=$1
 	echo_console "${CYAN}++++++++++++++++++++Copying The Services Started++++++++++++++++++++${RESET}"
 	case $choice in
 	0)
 		# Init Script
 		msg=`sudo cp $ETC_DIR/initscript.sh.sample $INIT_DIR/masakari-api -v`
-		sudo 0755 $INIT_DIR/masakari-api
+		sudo chmod 0755 $INIT_DIR/masakari-api
 		sudo sed -i "s/<PROGRAM_NAME>.*/masakari-api/g" $INIT_DIR/masakari-api
 		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-api/g" $INIT_DIR/masakari-api
 		echo_console "$msg"
 		
 		msg=`sudo cp $ETC_DIR/initscript.sh.sample $INIT_DIR/masakari-engine -v`
-		sudo 0755 $INIT_DIR/masakari-engine
+		sudo chmod 0755 $INIT_DIR/masakari-engine
 		sudo sed -i "s/<PROGRAM_NAME>.*/masakari-engine/g" $INIT_DIR/masakari-engine
 		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-engine/g" $INIT_DIR/masakari-engine
 		echo_console "$msg"
 		
 		msg=`sudo cp $ETC_DIR/initscript.sh.sample $INIT_DIR/masakari-wsgi -v`
-		sudo 0755 $INIT_DIR/masakari-wsgi
+		sudo chmod 0755 $INIT_DIR/masakari-wsgi
 		sudo sed -i "s/<PROGRAM_NAME>.*/masakari-wsgi/g" $INIT_DIR/masakari-wsgi
 		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-wsgi/g" $INIT_DIR/masakari-wsgi
 		echo_console "$msg"
