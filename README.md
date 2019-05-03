@@ -24,7 +24,7 @@ $ sudo -s
 Steps to follow in masakari installation. Check /masakari-doc/INSTALL.md
 
 # [Verify Operation]
-* In controller add the reserve host in to the database
+* In controller add the create segment and add host (mininum two compute host)
 ```bash
 $ . admin-openrc
 $ masakari segment-create --name failover --recovery-method auto --service-type compute --description instance_ha 
@@ -56,6 +56,22 @@ $ masakari host-create --name compute5 --type COMPUTE --control-attributes SSH -
 | type                | COMPUTE                                                                                                                                                               |
 | updated_at          | -                                                                                                                                                                     |
 | uuid                | 7abd98c9-10eb-45df-9acc-88ae669a7cc8                                                                                                                                  |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+$ masakari host-create --name compute3 --type COMPUTE --control-attributes SSH --segment-id 2c18541e-dc47-4f90-b415-a0d050841771
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Property            | Value                                                                                                                                                                 |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| control_attributes  | SSH                                                                                                                                                                   |
+| created_at          | 2019-05-03T10:34:39.466620                                                                                                                                            |
+| failover_segment_id | 2c18541e-dc47-4f90-b415-a0d050841771                                                                                                                                  |
+| id                  | 5                                                                                                                                                                     |
+| location            | {"project": {"domain_id": null, "id": "457823daef1e4a12b78dddf24aca3087", "name": null, "domain_name": null}, "zone": null, "region_name": "", "cloud": "controller"} |
+| name                | compute3                                                                                                                                                              |
+| on_maintenance      | False                                                                                                                                                                 |
+| reserved            | False                                                                                                                                                                 |
+| type                | COMPUTE                                                                                                                                                               |
+| updated_at          | -                                                                                                                                                                     |
+| uuid                | 42q848c9-10eb-45df-9acc-88ae669a7cc8                                                                                                                                  |
 +---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 ```
 * Create an instance in host that is going to down.
