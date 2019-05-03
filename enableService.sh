@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 # This script is used to create Masakari services
 # Usage:- 	sudo -s
 #		./enableService.sh {controller|compute}
