@@ -116,6 +116,8 @@ auth_type = password
 [database]
 connection = mysql+pymysql://masakari:MASAKARI_DBPASS@controller/masakari?charset=utf8
 ```
+Replace MASAKARI_DBPASS and NOVA_PASS with the password you chose for the nova user and masakari user in the Identity
+service. 
 * After running setup.py for masakari (sudo python setup.py install), run masakari-manage command to sync the database
 ```bash
 masakari-manage db sync
@@ -162,6 +164,74 @@ $ sudo apt install crm114
 $ sudo apt install crmsh
 ```
 * Edit configuration files /etc/corosync/corosync.conf /etc/default/corosync according to the sample configuration.
+* Minimal configuration of corosync. Open /etc/corosync/corosync.conf
+```bash
+totem {
+        version: 2
+
+        crypto_cipher: none
+        crypto_hash: none
+
+        interface {
+                ringnumber: 0
+                bindnetaddr: <bind-address>
+                mcastaddr: 226.94.1.1
+                mcastport: 5405
+                ttl: 1
+        }
+        transport: udpu
+}
+
+logging {
+        fileline: off
+        to_logfile: yes
+        to_syslog: yes
+        logfile: /var/log/corosync/corosync.log
+        debug: off
+        timestamp: on
+        logger_subsys {
+                subsys: QUORUM
+                debug: on
+        }
+}
+
+nodelist {
+        node {
+                ring0_addr: <compute1-address>
+                nodeid: 1
+        }
+        node {
+                ring0_addr: <compute2-address>
+                nodeid: 2
+        }
+}
+quorum {
+        # Enable and configure quorum subsystem (default: off)
+        # see also corosync.conf.5 and votequorum.5
+        provider: corosync_votequorum
+        two_node: 1
+}
+
+```
+<bind-address> will be  for example 192.168.1.0,<compute1-address> will be the ip address of compute1. node section will increase according to the no of compute node in the cluster.
+	
+* Open /etc/default/corosync
+```bash
+# Corosync runtime directory
+#COROSYNC_RUN_DIR=/var/lib/corosync
+
+# Path to corosync.conf
+#COROSYNC_MAIN_CONFIG_FILE=/etc/corosync/corosync.conf
+
+# Path to authfile
+#COROSYNC_TOTEM_AUTHKEY_FILE=/etc/corosync/authkey
+
+# Command line options
+#OPTIONS=""
+# start corosync at boot [yes|no]
+START=yes
+
+```
 * Clone masakari from git hub.
 ```bash
 $ git clone https://github.com/openstack/masakari-monitors.git --branch stable/rocky
@@ -180,7 +250,39 @@ $ tox -egenconfig
 $ sudo -s
 # ./masakarireq.sh
 ```
-* Edit the configuration file, sample configuration is in the same directory. 
+* Edit the configuration file, sample configuration is in the same directory.
+* Open /etc/masakarimonitors/masakarimonitors.conf
+```bash
+[DEFAULT]
+tempdir = /var/tmp/masakarimonitor
+host = <host_name>
+instancemonitor_manager = masakarimonitors.instancemonitor.instance.InstancemonitorManager
+introspectiveinstancemonitor_manager = masakarimonitors.introspectiveinstancemonitor.instance.IntrospectiveInstanceMonitorManager
+processmonitor_manager = masakarimonitors.processmonitor.process.ProcessmonitorManager
+hostmonitor_manager = masakarimonitors.hostmonitor.host.HostmonitorManager
+debug = true
+log_dir = /var/log/masakarimonitor
+
+[api]
+region = RegionOne
+api_version = v1
+api_interface = public
+auth_url = http://controller:5000/v3
+auth_type = password
+project_domain_id = default
+project_domain_name = default
+user_domain_id = default
+user_domain_name = default
+project_name = service
+username = masakari
+password = MASAKARI_PASS
+
+[host]
+corosync_multicast_interfaces = '<network_provider_name>'
+corosync_multicast_ports = '5405'
+```
+* Replace MASAKARI_DBPASS and NOVA_PASS with the password you chose for the nova user and masakari user in the Identity
+service.
 * Run the enableService.sh script from mdcMasakari top directory to enable the masakari service with parameter compute.
 ```bash
 $ sudo -s
