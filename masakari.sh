@@ -242,29 +242,32 @@ mdc_create_masakari_database() {
 	sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "GRANT ALL PRIVILEGES ON $db.* TO '$db'@'%' IDENTIFIED BY '$DB_PASSWORD'"
 }
 
+# This Function will create the configuration file of masakari services
+#
+mdc_create_conf () {
+	echo_console "++-- Creating Configuration file of $HOST_NAME"
+	if [ "$HOST_NAME" == "controller" ]; then
+		
+	elif [ "$HOST_NAME" == "compute" ]; then
+	
+	fi
+
+}
 #main routine
 result=0
 FNAME="masakari.sh"
 mdc_set_conf_value
-print_values
-echo_console "###########################################################"
-echo_console "####################masakari.sh starts#####################"
-echo_console "###########################################################"
+echo_console "${CYAN}###########################################################${RESET}"
+echo_console "${CYAN}####################masakari.sh starts#####################${RESET}"
+echo_console "${CYAN}###########################################################${RESET}"
 
 
-echo_console "${GREEN}################################################################${RESET}"
-echo_console "#masakari installation in $HOST_NAME"  
-echo_console "#is success         :-)  :-) :-)"
-echo_console "################################################################"
+echo_console "${GREEN}###########################################################${RESET}"
+echo_console "${GREEN}#masakari installation in $HOST_NAME${RESET}"  
+echo_console "${GREEN}#is success         :-)  :-) :-)${RESET}"
+echo_console "${GREEN}###########################################################${RESET}"
 
 #echo_default_value
 #end
 
 # new version
-
-
-
-
-
-
-
