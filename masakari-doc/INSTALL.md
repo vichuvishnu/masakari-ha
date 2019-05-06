@@ -80,9 +80,42 @@ $ sudo mkdir /var/log/masakari
 * Copy masakari.conf, api-paste.ini file from masakari/etc/ to /etc/masakari folder
 ```bash
 $ sudo cp etc/masakari/api-paste.ini /etc/masakari/api-paste.ini -v
-$ sudo cp etc/masakari/masakari.conf /etc/masakari/api-paste.ini -v
+$ sudo cp etc/masakari/masakari.conf /etc/masakari/masakari.conf -v
 ```
 * Edit the configuration file, sample configuration is in the same directory.
+* Minimal maskari controller configuration. Open /etc/masakari/masakari.conf
+```bash
+[default]
+auth_strategy = keystone
+masakari_topic = ha_engine
+os_privileged_user_tenant = service
+os_privileged_user_auth_url = http://controller:5000/v3
+os_privileged_user_name = nova
+os_privileged_user_password = NOVA_PASS
+log_dir = /var/log/masakari
+debug = true
+masakari_api_listen = <controller_ip>
+masakari_api_listen_port = 15868
+
+[keystone_authtoken]
+service_token_roles_required = true
+www_authenticate_uri = http://controller:5000/v3
+region = RegionOne
+auth_url = http://controller:5000/v3
+memcached_servers = controller:11211
+signing_dir = /var/cache/masakari
+project_domain_id = default
+project_domain_name = Default
+user_domain_id = default
+user_domain_name = Default
+project_name = service
+username = masakari
+password = MASAKARI_PASS
+auth_type = password
+
+[database]
+connection = mysql+pymysql://masakari:MASAKARI_DBPASS@controller/masakari?charset=utf8
+```
 * After running setup.py for masakari (sudo python setup.py install), run masakari-manage command to sync the database
 ```bash
 masakari-manage db sync
