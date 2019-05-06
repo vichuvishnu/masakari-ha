@@ -85,7 +85,6 @@ mdc_set_conf_value () {
     if [ $? -ne 0 ]; then
 	msg="config file read error. [$LOCAL_CONF]"
         echo_console "$msg"
-	log_info "$msg"
         return 1
     fi
     
@@ -94,6 +93,7 @@ mdc_set_conf_value () {
 
     my_ip=${my_ip:-""}
     check_config_type 'string' my_ip $my_ip
+    
     if [ "$my_ip" == "$CONTROLLER_IP" ]; then
 	HOST_NAME="controller"
     else
@@ -124,8 +124,6 @@ mdc_set_conf_value () {
     MYSQL_PASSWORD=${MYSQL_PASSWORD:-""}
     check_config_type 'string' MYSQL_PASSWORD $MYSQL_PASSWORD
     
-    MYSQL_HOST=${MYSQL_HOST:-"127.0.0.1"}
-    check_config_type 'string' MYSQL_HOST $MYSQL_HOST
     
     if [ $HOST_NAME == "compute" ]; then
 	BIND_IP=${BIND_IP:-""}
@@ -189,57 +187,98 @@ mdc_set_conf_value () {
 mdc_admin-openrc(){
 	echo_console "++-- . admin-openrc"
 	echo_console "++-- export OS_PROJECT_DOMAIN_ID=$OS_PROJECT_DOMAIN_ID"
-	export OS_PROJECT_DOMAIN_ID=$OS_PROJECT_DOMAIN_ID
+	#export OS_PROJECT_DOMAIN_ID=$OS_PROJECT_DOMAIN_ID
 	echo_console "++-- export OS_USER_DOMAIN_ID=$OS_USER_DOMAIN_ID"
-	export OS_USER_DOMAIN_ID=$OS_USER_DOMAIN_ID
+	#export OS_USER_DOMAIN_ID=$OS_USER_DOMAIN_ID
 	echo_console "++-- export OS_PROJECT_DOMAIN_NAME=$OS_PROJECT_DOMAIN_NAME"
-	export OS_PROJECT_DOMAIN_NAME=$OS_PROJECT_DOMAIN_NAME
+	#export OS_PROJECT_DOMAIN_NAME=$OS_PROJECT_DOMAIN_NAME
 	echo_console "++-- export OS_USER_DOMAIN_NAME=$OS_USER_DOMAIN_NAME"
-	export OS_USER_DOMAIN_NAME=$OS_USER_DOMAIN_NAME
+	#export OS_USER_DOMAIN_NAME=$OS_USER_DOMAIN_NAME
 	echo_console "++-- export OS_PROJECT_NAME=$OS_PROJECT_NAME"
-	export OS_PROJECT_NAME=$OS_PROJECT_NAME
+	#export OS_PROJECT_NAME=$OS_PROJECT_NAME
 	echo_console "++-- export OS_USERNAME=$OS_USERNAME"
-	export OS_USERNAME=$OS_USERNAME
+	#export OS_USERNAME=$OS_USERNAME
 	echo_console "++-- export OS_PASSWORD=$OS_PASSWORD"
-	export OS_PASSWORD=$OS_PASSWORD
+	#export OS_PASSWORD=$OS_PASSWORD
 	echo_console "++-- export OS_AUTH_URL=$OS_AUTH_URL"
-	export OS_AUTH_URL=$OS_AUTH_URL
+	#export OS_AUTH_URL=$OS_AUTH_URL
 	echo_console "++-- export OS_IDENTITY_API_VERSION=3"
-	export OS_IDENTITY_API_VERSION=$OS_IDENTITY_API_VERSION
+	#export OS_IDENTITY_API_VERSION=$OS_IDENTITY_API_VERSION
 	echo_console "++-- export OS_IMAGE_API_VERSION=$OS_IMAGE_API_VERSION"
-	export OS_IMAGE_API_VERSION=$OS_IMAGE_API_VERSION
+	#export OS_IMAGE_API_VERSION=$OS_IMAGE_API_VERSION
 	return 0
 }
 
 # This function is used to create masakari user and requirements
 # 
 mdc_create_masakari_user() {
-	echo_console "++--  creating openstack user masakari"
+	echo_console "++-- creating openstack user masakari"
 	openstack_user="masakari"
 	mdc_admin-openrc
-	echo_console "++--  openstack user create --domain default --password $USER_PASSWORD $openstack_user"
-	openstack user create --domain default --password $USER_PASSWORD $openstack_user
-	echo_console "++--  openstack role add --project service --user $openstack_user admin"
-	openstack role add --project service --user $openstack_user admin
-	echo_console "++--  openstack service create --name $openstack_user --description \"OpenStack Compute\" instance-ha"
-	openstack service create --name $openstack_user --description "OpenStack Compute" instance-ha
-	echo_console "++--  openstack endpoint create --region $region $openstack_user public http://controller:15868/v1/%\(tenant_id\)s"
-	openstack endpoint create --region $region $openstack_user public http://controller:15868/v1/%\(tenant_id\)s
-	echo_console "++--  openstack endpoint create --region $region $openstack_user internal http://controller:15868/v1/%\(tenant_id\)s"
-	openstack endpoint create --region $region $openstack_user internal http://controller:15868/v1/%\(tenant_id\)s
-	echo_console "++--  openstack endpoint create --region $region $openstack_user admin http://controller:15868/v1/%\(tenant_id\)s"
-	openstack endpoint create --region $region $openstack_user admin http://controller:15868/v1/%\(tenant_id\)s
+	echo_console "++-- openstack user create --domain default --password $USER_PASSWORD $openstack_user"
+	#openstack user create --domain default --password $USER_PASSWORD $openstack_user
+	echo_console "++-- openstack role add --project service --user $openstack_user admin"
+	#openstack role add --project service --user $openstack_user admin
+	echo_console "++-- openstack service create --name $openstack_user --description \"OpenStack Compute\" instance-ha"
+	#openstack service create --name $openstack_user --description "OpenStack Compute" instance-ha
+	echo_console "++-- openstack endpoint create --region $region $openstack_user public http://controller:15868/v1/%\(tenant_id\)s"
+	#openstack endpoint create --region $region $openstack_user public http://controller:15868/v1/%\(tenant_id\)s
+	echo_console "++-- openstack endpoint create --region $region $openstack_user internal http://controller:15868/v1/%\(tenant_id\)s"
+	#openstack endpoint create --region $region $openstack_user internal http://controller:15868/v1/%\(tenant_id\)s
+	echo_console "++-- openstack endpoint create --region $region $openstack_user admin http://controller:15868/v1/%\(tenant_id\)s"
+	#openstack endpoint create --region $region $openstack_user admin http://controller:15868/v1/%\(tenant_id\)s
 }
 
 #This function creates the masakari database
 #
 mdc_create_masakari_database() {
 	#FNAME="create_masakari_database"
+	MYSQL_HOST="localhost"
 	echo_console "++--  database bulding masakari"
-	sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "DROP DATABASE IF EXISTS $db;"
-	sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "CREATE DATABASE $db CHARACTER SET utf8;"
-	sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "GRANT ALL PRIVILEGES ON $db.* TO '$db'@'localhost' IDENTIFIED BY '$DB_PASSWORD'"
-	sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "GRANT ALL PRIVILEGES ON $db.* TO '$db'@'%' IDENTIFIED BY '$DB_PASSWORD'"
+	#sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "DROP DATABASE IF EXISTS $db;"
+	#sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "CREATE DATABASE $db CHARACTER SET utf8;"
+	#sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "GRANT ALL PRIVILEGES ON $db.* TO '$db'@'localhost' IDENTIFIED BY '$DB_PASSWORD'"
+	#sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "GRANT ALL PRIVILEGES ON $db.* TO '$db'@'%' IDENTIFIED BY '$DB_PASSWORD'"
+}
+
+# This Function will clone the masakari service according to what host is
+#
+mdc_clone_masakari () {
+	cd $TOP_DIR
+	if [ "$HOST_NAME" == "controller" ]; then
+		echo_console "++-- clonning masakari"
+		git clone https://github.com/openstack/masakari.git --branch stable/rocky
+		echo_console "++-- clonning masakari-dashboard"
+		git clone https://github.com/openstack/masakari-dashboard --branch stable/rocky
+	elif [ "$HOST_NAME" == "compute" ]; then
+		echo_console "++-- clonning masakari-monitors"
+		git clone https://github.com/openstack/masakari-monitors.git --branch stable/rocky
+	fi
+}
+
+# This function will install the masakari services
+#
+mdc_install_masakari () {
+	if [ "$HOST_NAME" == "controller" ]; then
+		cd $TOP_DIR/masakari
+		echo_console "++-- installing masakari controller service"
+		sudo python setup.py install
+		cd $TOP_DIR
+		echo_console "++-- installing python-masakariclient"
+		sudo pip install python-masakariclient
+		echo_console "++-- installing masakari-dashboard"
+		sudo pip install -e masakari-dashboard
+	elif [ "$HOST_NAME" == "compute" ]; then
+		echo_console "++-- installing corosync pacemaker"
+		sudo apt-get install corosync pacemaker -y
+		echo_console "++-- installing crm114"
+		sudo apt install crm114 -y
+		echo_console "++-- installing crmsh"
+		sudo apt install crmsh -y
+		cd $TOP_DIR/masakari-monitors
+		echo_console "++-- installing masakari-monitors"
+		sudo python setup.py install
+	fi
 }
 
 # This Function will create the configuration file of masakari services
@@ -249,7 +288,7 @@ mdc_create_conf () {
 	if [ "$HOST_NAME" == "controller" ]; then
 		
 	elif [ "$HOST_NAME" == "compute" ]; then
-	
+		
 	fi
 
 }
@@ -261,6 +300,10 @@ echo_console "${CYAN}###########################################################
 echo_console "${CYAN}####################masakari.sh starts#####################${RESET}"
 echo_console "${CYAN}###########################################################${RESET}"
 
+mdc_create_masakari_user
+mdc_create_masakari_database
+mdc_clone_masakari
+
 
 echo_console "${GREEN}###########################################################${RESET}"
 echo_console "${GREEN}#masakari installation in $HOST_NAME${RESET}"  
@@ -271,3 +314,4 @@ echo_console "${GREEN}##########################################################
 #end
 
 # new version
+
