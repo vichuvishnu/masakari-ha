@@ -6,6 +6,8 @@
 
 # Directories
 TOP_DIR=$(cd $(dirname "$0") && pwd)
+MASAKARI_DIR="$TOP_DIR/masakari"
+MASAKARI-MONITOR_DIR="$TOP_DIR/masakari-monitors"
 ETC_DIR="$TOP_DIR/etc"
 LOGDIR="$TOP_DIR/log"
 LOGFILE="${LOGDIR}/masakari.log"
@@ -239,21 +241,6 @@ mdc_create_masakari_database() {
 	#sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "CREATE DATABASE $db CHARACTER SET utf8;"
 	#sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "GRANT ALL PRIVILEGES ON $db.* TO '$db'@'localhost' IDENTIFIED BY '$DB_PASSWORD'"
 	#sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "GRANT ALL PRIVILEGES ON $db.* TO '$db'@'%' IDENTIFIED BY '$DB_PASSWORD'"
-}
-
-# This Function will clone the masakari service according to what host is
-#
-mdc_clone_masakari () {
-	cd $TOP_DIR
-	if [ "$HOST_NAME" == "controller" ]; then
-		echo_console "++-- clonning masakari"
-		git clone https://github.com/openstack/masakari.git --branch stable/rocky
-		echo_console "++-- clonning masakari-dashboard"
-		git clone https://github.com/openstack/masakari-dashboard --branch stable/rocky
-	elif [ "$HOST_NAME" == "compute" ]; then
-		echo_console "++-- clonning masakari-monitors"
-		git clone https://github.com/openstack/masakari-monitors.git --branch stable/rocky
-	fi
 }
 
 # This function will install the masakari services
