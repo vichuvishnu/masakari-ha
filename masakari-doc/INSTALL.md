@@ -215,7 +215,7 @@ quorum {
 }
 
 ```
-<bind-address> will be  for example 192.168.1.0,<compute1-address> will be the ip address of compute1. node section will increase according to the no of compute node in the cluster.
+```<bind-address>```will be  for example 192.168.1.0,<compute1-address> will be the ip address of compute1. node section will increase according to the no of compute node in the cluster.
 	
 * Open /etc/default/corosync
 ```bash
