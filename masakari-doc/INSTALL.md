@@ -215,7 +215,7 @@ quorum {
 }
 
 ```
-```<bind-address>```will be  for example 192.168.1.0,<compute1-address> will be the ip address of compute1. node section will increase according to the no of compute node in the cluster.
+```<bind-address>```will be like this 192.168.1.0,```<compute1-address>``` will be the ip address of compute1 and so on. node section will increase according to the no of compute node in the cluster.
 	
 * Open /etc/default/corosync
 ```bash
@@ -280,11 +280,10 @@ username = masakari
 password = MASAKARI_PASS
 
 [host]
-corosync_multicast_interfaces = '<network_provider_name>'
+corosync_multicast_interfaces = '<management_network_interface_name>'
 corosync_multicast_ports = '5405'
 ```
-* Replace MASAKARI_PASS with the password you chose for the masakari user in the Identity
-service.
+* Replace MASAKARI_PASS with the password you chose for the masakari user in the Identity service.```<management_network_interface_name>``` will be the network interface name for example 'ens1' or 'enp2s0' 
 * Run the enableService.sh script from mdcMasakari top directory to enable the masakari service with parameter compute.
 ```bash
 $ sudo -s
@@ -296,4 +295,59 @@ $ sudo -s
 # service masakari-processmonitor restart
 # service masakari-instancemonitor restart
 ```
+# Masakari Verification 
+* In controller add the create segment and add host (mininum two compute host)
+```bash
+$ . admin-openrc
+$ masakari segment-create --name failover --recovery-method auto --service-type compute --description instance_ha 
++-----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Property        | Value                                                                                                                                                                 |
++-----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| created_at      | 2019-05-03T09:59:08.085106                                                                                                                                            |
+| description     | instance_ha                                                                                                                                                           |
+| id              | 2                                                                                                                                                                     |
+| location        | {"project": {"domain_id": null, "id": "b40d394fef1e4a12b78dddf24aca3087", "name": null, "domain_name": null}, "zone": null, "region_name": "", "cloud": "controller"} |
+| name            | failover                                                                                                                                                              |
+| recovery_method | auto                                                                                                                                                                  |
+| service_type    | compute                                                                                                                                                               |
+| updated_at      | -                                                                                                                                                                     |
+| uuid            | 2c18541e-dc47-4f90-b415-a0d050841771                                                                                                                                  |
++-----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+$ masakari host-create --name compute5 --type COMPUTE --control-attributes SSH --segment-id 2c18541e-dc47-4f90-b415-a0d050841771
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Property            | Value                                                                                                                                                                 |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| control_attributes  | SSH                                                                                                                                                                   |
+| created_at          | 2019-05-03T10:34:39.466620                                                                                                                                            |
+| failover_segment_id | 2c18541e-dc47-4f90-b415-a0d050841771                                                                                                                                  |
+| id                  | 4                                                                                                                                                                     |
+| location            | {"project": {"domain_id": null, "id": "b40d394fef1e4a12b78dddf24aca3087", "name": null, "domain_name": null}, "zone": null, "region_name": "", "cloud": "controller"} |
+| name                | compute5                                                                                                                                                              |
+| on_maintenance      | False                                                                                                                                                                 |
+| reserved            | False                                                                                                                                                                 |
+| type                | COMPUTE                                                                                                                                                               |
+| updated_at          | -                                                                                                                                                                     |
+| uuid                | 7abd98c9-10eb-45df-9acc-88ae669a7cc8                                                                                                                                  |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+$ masakari host-create --name compute3 --type COMPUTE --control-attributes SSH --segment-id 2c18541e-dc47-4f90-b415-a0d050841771
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Property            | Value                                                                                                                                                                 |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| control_attributes  | SSH                                                                                                                                                                   |
+| created_at          | 2019-05-03T10:34:39.466620                                                                                                                                            |
+| failover_segment_id | 2c18541e-dc47-4f90-b415-a0d050841771                                                                                                                                  |
+| id                  | 5                                                                                                                                                                     |
+| location            | {"project": {"domain_id": null, "id": "457823daef1e4a12b78dddf24aca3087", "name": null, "domain_name": null}, "zone": null, "region_name": "", "cloud": "controller"} |
+| name                | compute3                                                                                                                                                              |
+| on_maintenance      | False                                                                                                                                                                 |
+| reserved            | False                                                                                                                                                                 |
+| type                | COMPUTE                                                                                                                                                               |
+| updated_at          | -                                                                                                                                                                     |
+| uuid                | 42q848c9-10eb-45df-9acc-88ae669a7cc8                                                                                                                                  |
++---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+```
+* Create an instance in host that is going to down.
+* Verify that the instance is in the correct host.
+* Poweroff the host that contain instance.
+* After a few minutes the instance is move to the reserved host
 
