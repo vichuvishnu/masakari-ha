@@ -8,7 +8,7 @@
 TOP_DIR=$(cd $(dirname "$0") && pwd)
 ETC_DIR="$TOP_DIR/etc"
 SERVICE_DIR="/etc/systemd/system"
-INIT_DIR="/etc/init.d"
+LIB_SERVICE_DIR="/lib/systemd/system"
 
 # Color
 RED=`tput setaf 1`
@@ -36,78 +36,65 @@ copy_services() {
 	echo_console "${CYAN}++++++++++++++++++++Copying The Services Started++++++++++++++++++++${RESET}"
 	case $choice in
 	0)
-		# Init Script
-		msg=`sudo cp $ETC_DIR/initscript.sh.sample $INIT_DIR/masakari-api -v`
-		sudo chmod 0755 $INIT_DIR/masakari-api
-		sudo sed -i "s/<PROGRAM_NAME>.*/masakari-api/g" $INIT_DIR/masakari-api
-		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-api/g" $INIT_DIR/masakari-api
-		echo_console "$msg"
-		
-		msg=`sudo cp $ETC_DIR/initscript.sh.sample $INIT_DIR/masakari-engine -v`
-		sudo chmod 0755 $INIT_DIR/masakari-engine
-		sudo sed -i "s/<PROGRAM_NAME>.*/masakari-engine/g" $INIT_DIR/masakari-engine
-		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-engine/g" $INIT_DIR/masakari-engine
-		echo_console "$msg"
-		
-		msg=`sudo cp $ETC_DIR/initscript.sh.sample $INIT_DIR/masakari-wsgi -v`
-		sudo chmod 0755 $INIT_DIR/masakari-wsgi
-		sudo sed -i "s/<PROGRAM_NAME>.*/masakari-wsgi/g" $INIT_DIR/masakari-wsgi
-		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-wsgi/g" $INIT_DIR/masakari-wsgi
-		echo_console "$msg"
-		
 		# Service Script
-		msg=`sudo cp $ETC_DIR/servicescript.service.sample $SERVICE_DIR/masakari-api.service -v`
-		sudo sed -i "s/<DESCRIPTION>.*/Masakari Api/g" $SERVICE_DIR/masakari-api.service
-		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-api/g" $SERVICE_DIR/masakari-api.service
+		msg=`sudo cp $ETC_DIR/servicescript.service.sample $LIB_SERVICE_DIR/masakari-api.service -v`
+		sudo sed -i "s/<DESCRIPTION>.*/Masakari Api/g" $LIB_SERVICE_DIR/masakari-api.service
+		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-api/g" $LIB_SERVICE_DIR/masakari-api.service
+		echo_console "$msg"
+		msg=`ln -s $LIB_SERVICE_DIR/masakari-api.service $SERVICE_DIR -v`
+		echo_console "$msg"
+		msg=`sudo systemctl enable masakari-api.service`
 		echo_console "$msg"
 		
-		msg=`sudo cp $ETC_DIR/servicescript.service.sample $SERVICE_DIR/masakari-engine.service -v`
-		sudo sed -i "s/<DESCRIPTION>.*/Masakari Engine/g" $SERVICE_DIR/masakari-engine.service
-		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-engine/g" $SERVICE_DIR/masakari-engine.service
+		msg=`sudo cp $ETC_DIR/servicescript.service.sample $LIB_SERVICE_DIR/masakari-engine.service -v`
+		sudo sed -i "s/<DESCRIPTION>.*/Masakari Engine/g" $LIB_SERVICE_DIR/masakari-engine.service
+		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-engine/g" $LIB_SERVICE_DIR/masakari-engine.service
+		echo_console "$msg"
+		msg=`ln -s $LIB_SERVICE_DIR/masakari-engine.service $SERVICE_DIR -v`
+		echo_console "$msg"
+		msg=`sudo systemctl enable masakari-engine.service`
 		echo_console "$msg"
 		
-		msg=`sudo cp $ETC_DIR/servicescript.service.sample $SERVICE_DIR/masakari-wsgi.service -v`
-		sudo sed -i "s/<DESCRIPTION>.*/Masakari Wsgi/g" $SERVICE_DIR/masakari-wsgi.service
-		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-wsgi/g" $SERVICE_DIR/masakari-wsgi.service
+		msg=`sudo cp $ETC_DIR/servicescript.service.sample $LIB_SERVICE_DIR/masakari-wsgi.service -v`
+		sudo sed -i "s/<DESCRIPTION>.*/Masakari Wsgi/g" $LIB_SERVICE_DIR/masakari-wsgi.service
+		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-wsgi/g" $LIB_SERVICE_DIR/masakari-wsgi.service
+		echo_console "$msg"
+		msg=`ln -s $LIB_SERVICE_DIR/masakari-wsgi.service $SERVICE_DIR -v`
+		echo_console "$msg"
+		msg=`sudo systemctl enable masakari-wsgi.service`
 		echo_console "$msg"
 		;;
 	1)
-		# Init Script
-		msg=`sudo cp $ETC_DIR/initscript.sh.sample $INIT_DIR/masakari-hostmonitor -v`
-		sudo 0755 $INIT_DIR/masakari-hostmonitor
-		sudo sed -i "s/<PROGRAM_NAME>.*/masakari-hostmonitor/g" $INIT_DIR/masakari-hostmonitor
-		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-hostmonitor/g" $INIT_DIR/masakari-hostmonitor
-		echo_console "$msg"
-		
-		msg=`sudo cp $ETC_DIR/initscript.sh.sample $INIT_DIR/masakari-instancemonitor -v`
-		sudo 0755 $INIT_DIR/masakari-instancemonitor
-		sudo sed -i "s/<PROGRAM_NAME>.*/masakari-instancemonitor/g" $INIT_DIR/masakari-instancemonitor
-		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-instancemonitor/g" $INIT_DIR/masakari-instancemonitor
-		echo_console "$msg"
-		
-		msg=`sudo cp $ETC_DIR/initscript.sh.sample $INIT_DIR/masakari-processmonitor -v`
-		sudo 0755 $INIT_DIR/masakari-processmonitor
-		sudo sed -i "s/<PROGRAM_NAME>.*/masakari-processmonitor/g" $INIT_DIR/masakari-processmonitor
-		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-processmonitor/g" $INIT_DIR/masakari-processmonitor
-		echo_console "$msg"
-		
 		# Service Script
-		msg=`sudo cp $ETC_DIR/servicescript.service.sample $SERVICE_DIR/masakari-hostmonitor.service -v`
-		sudo sed -i "s/<DESCRIPTION>.*/Masakari Hostmonitor/g" $SERVICE_DIR/masakari-hostmonitor.service
-		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-hostmonitor/g" $SERVICE_DIR/masakari-hostmonitor.service
+		msg=`sudo cp $ETC_DIR/servicescript.service.sample $LIB_SERVICE_DIR/masakari-hostmonitor.service -v`
+		sudo sed -i "s/<DESCRIPTION>.*/Masakari Hostmonitor/g" $LIB_SERVICE_DIR/masakari-hostmonitor.service
+		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-hostmonitor/g" $LIB_SERVICE_DIR/masakari-hostmonitor.service
+		echo_console "$msg"
+		msg=`ln -s $LIB_SERVICE_DIR/masakari-hostmonitor.service $SERVICE_DIR -v`
+		echo_console "$msg"
+		msg=`sudo systemctl enable masakari-hostmonitor.service`
 		echo_console "$msg"
 		
-		msg=`sudo cp $ETC_DIR/servicescript.service.sample $SERVICE_DIR/masakari-instancemonitor -v`
-		sudo sed -i "s/<DESCRIPTION>.*/Masakari Instancemonitor/g" $SERVICE_DIR/masakari-instancemonitor.service
-		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-instancemonitor/g" $SERVICE_DIR/masakari-instancemonitor.service
+		msg=`sudo cp $ETC_DIR/servicescript.service.sample $LIB_SERVICE_DIR/masakari-instancemonitor -v`
+		sudo sed -i "s/<DESCRIPTION>.*/Masakari Instancemonitor/g" $LIB_SERVICE_DIR/masakari-instancemonitor.service
+		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-instancemonitor/g" $LIB_SERVICE_DIR/masakari-instancemonitor.service
+		echo_console "$msg"
+		msg=`ln -s $LIB_SERVICE_DIR/masakari-instancemonitor.service $SERVICE_DIR -v`
+		echo_console "$msg"
+		msg=`sudo systemctl enable masakari-instancemonitor.service`
 		echo_console "$msg"
 		
-		msg=`sudo cp $ETC_DIR/servicescript.service.sample $SERVICE_DIR/masakari-processmonitor.service -v`
-		sudo sed -i "s/<DESCRIPTION>.*/Masakari Processmonitor/g" $SERVICE_DIR/masakari-processmonitor.service
-		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-processmonitor/g" $SERVICE_DIR/masakari-processmonitor.service
+		msg=`sudo cp $ETC_DIR/servicescript.service.sample $LIB_SERVICE_DIR/masakari-processmonitor.service -v`
+		sudo sed -i "s/<DESCRIPTION>.*/Masakari Processmonitor/g" $LIB_SERVICE_DIR/masakari-processmonitor.service
+		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-processmonitor/g" $LIB_SERVICE_DIR/masakari-processmonitor.service
+		echo_console "$msg"
+		msg=`ln -s $LIB_SERVICE_DIR/masakari-processmonitor.service $LIB_SERVICE_DIR -v`
+		echo_console "$msg"
+		msg=`sudo systemctl enable masakari-processmonitor.service`
 		echo_console "$msg"
 		;;
 	esac
+	sudo systemctl daemon-reload
 	echo_console "${CYAN}++++++++++++++++++++Copying The Services Ends++++++++++++++++++++${RESET}"
 }
 
@@ -123,3 +110,4 @@ else
 	exit 1
 fi
 echo_console "${GREEN}Masakari-$HOST_NAME Servies Setting up Success :-) :-) :-) ${RESET}"
+
