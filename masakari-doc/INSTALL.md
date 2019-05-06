@@ -116,8 +116,10 @@ auth_type = password
 [database]
 connection = mysql+pymysql://masakari:MASAKARI_DBPASS@controller/masakari?charset=utf8
 ```
-Replace MASAKARI_DBPASS and NOVA_PASS with the password you chose for the nova user and masakari user in the Identity
+Replace MASAKARI_PASS and NOVA_PASS with the password you chose for the nova user and masakari user in the Identity
 service. 
+Replace MASAKARI_DBPASS with the password you chose for the Masakari databases .
+
 * After running setup.py for masakari (sudo python setup.py install), run masakari-manage command to sync the database
 ```bash
 masakari-manage db sync
@@ -281,7 +283,7 @@ password = MASAKARI_PASS
 corosync_multicast_interfaces = '<network_provider_name>'
 corosync_multicast_ports = '5405'
 ```
-* Replace MASAKARI_DBPASS and NOVA_PASS with the password you chose for the nova user and masakari user in the Identity
+* Replace MASAKARI_PASS with the password you chose for the masakari user in the Identity
 service.
 * Run the enableService.sh script from mdcMasakari top directory to enable the masakari service with parameter compute.
 ```bash
