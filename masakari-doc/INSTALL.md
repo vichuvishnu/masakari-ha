@@ -144,7 +144,7 @@ $ ln -s $HOME_DIR/masakari-dashboard/masakaridashboard/local/enabled/_50_masakar
 $ ln -s $HOME_DIR/masakari-dashboard/masakaridashboard/local/local_settings.d/_50_masakari.py /usr/lib/python2.7/dist-packages/openstack_dashboard/local/local_settings.d
 $ ln -s $HOME_DIR/masakari-dashboard/masakaridashboard/conf/masakari_policy.json /usr/lib/python2.7/dist-packages/openstack_dashboard/conf
 ```
-* Finilize Masakari Controller Service Installation.
+## Finilize Masakari Controller Service Installation.
 ```bash
 # service masakari-api restart
 # service masakari-engine restart
@@ -289,7 +289,7 @@ corosync_multicast_ports = '5405'
 $ sudo -s
 # ./enableService.sh compute
 ```
-* Finilize Masakari Controller Service Installation.
+## Finilize Masakari Controller Service Installation.
 ```bash
 # service masakari-hostmonitor restart
 # service masakari-processmonitor restart
