@@ -14,6 +14,8 @@ LOGFILE="${LOGDIR}/masakari.log"
 LOCAL_CONF="$TOP_DIR/local.conf"
 MASAKARI_CONF="/etc/masakari"
 MASAKARIMONITOR_CONF="/etc/masakarimonitors"
+LIB_SERVICE_DIR="/lib/systemd/system"
+SERVICE_DIR="/etc/systemd/system"
 
 
 # Color
@@ -367,7 +369,7 @@ mdc_enable_masakari_service () {
 		msg=`sudo systemctl enable masakari-hostmonitor.service`
 		echo_console "${CYAN}++-- $msg${RESET}"
 		
-		msg=`sudo cp $ETC_DIR/servicescript.service.tmp $LIB_SERVICE_DIR/masakari-instancemonitor -v`
+		msg=`sudo cp $ETC_DIR/servicescript.service.tmp $LIB_SERVICE_DIR/masakari-instancemonitor.service -v`
 		sudo sed -i "s/<DESCRIPTION>.*/Masakari Instancemonitor/g" $LIB_SERVICE_DIR/masakari-instancemonitor.service
 		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-instancemonitor/g" $LIB_SERVICE_DIR/masakari-instancemonitor.service
 		echo_console "${CYAN}++-- $msg${RESET}"
