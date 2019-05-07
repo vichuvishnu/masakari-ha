@@ -435,14 +435,14 @@ mdc_create_masakari_conf () {
 		sudo cp $ETC_DIR/api-paste.ini.tmp $MASAKARI_CONF/api-paste.ini -v
 		#editing masakari.conf
 		sudo sed -i "s/os_privileged_user_password = <os_privileged_user_password>.*/os_privileged_user_password = $NOVA_PASSWORD/g" $MASAKARI_CONF/masakari.conf
-		sudo sed -i "s/log_dir = <log_dir>.*/log_dir = $LOG_DIR/g" $MASAKARI_CONF/masakari.conf
+		#sudo sed -i "s/log_dir = <log_dir>.*/log_dir = $LOG_DIR/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/masakari_api_listen = <listen_ip>.*/masakari_api_listen = $CONTROLLER_IP/g" $MASAKARI_CONF/masakari.conf
-		sudo sed -i "s/connection = <database_connection>.*/connection = mysql+pymysql://masakari:$DB_PASSWORD@controller/masakari?charset=utf8/g" $MASAKARI_CONF/masakari.conf
-		sudo sed -i "s/www_authenticate_uri = <www_authenticate_uri>.*/www_authenticate_uri = $www_authenticate_uri/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/<DB_PASSWORD>/$DB_PASSWORD/g" $MASAKARI_CONF/masakari.conf
+		#sudo sed -i "s/www_authenticate_uri = <www_authenticate_uri>.*/www_authenticate_uri = $www_authenticate_uri/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/region = <region>.*/region = $region/g" $MASAKARI_CONF/masakari.conf
-		sudo sed -i "s/auth_url = <auth_url>.*/auth_url = $OS_AUTH_URL/g" $MASAKARI_CONF/masakari.conf
-		sudo sed -i "s/memcached_servers = <memcached_servers>.*/memcached_servers = $memcached_servers/g" $MASAKARI_CONF/masakari.conf
-		sudo sed -i "s/signing_dir = <signing_dir>.*/signing_dir = $signing_dir/g" $MASAKARI_CONF/masakari.conf
+		#sudo sed -i "s/auth_url = <auth_url>.*/auth_url = $OS_AUTH_URL/g" $MASAKARI_CONF/masakari.conf
+		#sudo sed -i "s/memcached_servers = <memcached_servers>.*/memcached_servers = $memcached_servers/g" $MASAKARI_CONF/masakari.conf
+		#sudo sed -i "s/signing_dir = <signing_dir>.*/signing_dir = $signing_dir/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/project_domain_id = <project_domain_id>.*/project_domain_id = $OS_PROJECT_DOMAIN_ID/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/project_domain_name = <project_domain_name>.*/project_domain_name = $OS_PROJECT_DOMAIN_NAME/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/user_domain_id = <user_domain_id>.*/user_domain_id = $OS_USER_DOMAIN_ID/g" $MASAKARI_CONF/masakari.conf
@@ -451,6 +451,7 @@ mdc_create_masakari_conf () {
 		sudo sed -i "s/username = <username>.*/username = masakari/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/password = <password>.*/password = $USER_PASSWORD/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/host = <hostname>.*/host = $my_ip/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/debug = <debug>.*/debug = $debug/g" $MASAKARI_CONF/masakari.conf
 		
 	elif [ "$HOST_NAME" == "compute" ]; then
 		if [ ! -e ${MASAKARIMONITOR_CONF} ]; then
@@ -527,7 +528,3 @@ echo_success
 
 #end
 # new version
-
-
-
-
