@@ -9,8 +9,8 @@ os_privileged_user_tenant = service
 os_privileged_user_auth_url = http://controller:5000/v3 
 os_privileged_user_name = nova
 os_privileged_user_password = <os_privileged_user_password>
-log_dir = <log_dir>
-debug = true
+log_dir = /var/log/masakari
+debug = <debug>
 masakari_api_listen = <listen_ip>
 masakari_api_listen_port = 15868
 
@@ -659,8 +659,7 @@ masakari_api_listen_port = 15868
 #
 # From oslo.db
 #
-#connection = mysql+pymysql://masakari:masakari@controller/masakari?charset=utf8
-connection = <database_connection>
+connection = mysql+pymysql://masakari:<DB_PASSWORD>@controller/masakari?charset=utf8/g
 
 # If True, SQLite uses synchronous mode. (boolean value)
 #sqlite_synchronous = true
@@ -843,11 +842,11 @@ connection = <database_connection>
 # From keystonemiddleware.auth_token
 #
 service_token_roles_required = true
-www_authenticate_uri = <www_authenticate_uri>
+www_authenticate_uri="http://controller:5000/v3"
 region = <region>
-auth_url = <auth_url>
+auth_url="http://controller:5000/v3"
 memcached_servers = <memcached_servers>
-signing_dir = <signing_dir>
+signing_dir ="/var/cache/masakari"
 project_domain_id = <project_domain_id>
 project_domain_name = <project_domain_name>
 user_domain_id = <user_domain_id>
@@ -1939,3 +1938,4 @@ api_paste_config = /etc/masakari/api-paste.ini
 # is idle for this number of seconds it will be closed. A value of '0' means
 # wait forever. (integer value)
 #client_socket_timeout = 900
+
