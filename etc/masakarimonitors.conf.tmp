@@ -174,16 +174,16 @@ log_dir = /var/log/masakari
 #
 
 # Region name. (string value)
-#region = RegionOne
+region = <region>
 
 # Masakari API Version. (string value)
-#api_version = v1
+api_version = v1
 
 # Interface of endpoint. (string value)
-#api_interface = public
+api_interface = public
 
 # Authentication URL (string value)
-#auth_url = <None>
+auth_url = http://controller:5000/v3
 
 # Scope for system operations (string value)
 #system_scope = <None>
@@ -200,13 +200,13 @@ log_dir = /var/log/masakari
 
 # Project name to scope to (string value)
 # Deprecated group/name - [api]/tenant_name
-#project_name = <None>
+project_name = service
 
 # Domain ID containing project (string value)
-#project_domain_id = <None>
+project_domain_id = <project_domain_id>
 
 # Domain name containing project (string value)
-#project_domain_name = <None>
+project_domain_name = <project_domain_name>
 
 # Trust ID (string value)
 #trust_id = <None>
@@ -226,38 +226,17 @@ log_dir = /var/log/masakari
 
 # Username (string value)
 # Deprecated group/name - [api]/user_name
-#username = admin
+username = masakari
 
 # User's domain id (string value)
-#user_domain_id = <None>
+user_domain_id = <user_domain_id>
 
 # User's domain name (string value)
-#user_domain_name = Default
+user_domain_name = <user_domain_name>
 
 # User's password (string value)
-#password = accl
-#auth_url = http://controller:5000/v3
-#memcached_servers = controller:11211
-#auth_type = password
-#project_domain_name = default
-#user_domain_name = default
-#project_name = service
-#username = masakari
-#password = masakari
-region = <region>
-api_version = v1
-api_interface = public
-auth_url = http://controller:5000/v3
-auth_type = password
-project_domain_id = <project_domain_id>
-project_domain_name = <project_domain_name>
-user_domain_id = <user_domain_id>
-user_domain_name = <user_domain_name>
-project_name = service
-username = masakari
 password = <password>
-
-
+auth_type = password
 
 [callback]
 
