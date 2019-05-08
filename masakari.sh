@@ -52,11 +52,6 @@ echo_success() {
 	x=0
 	y=`tput cols`
 	while [ $x -lt $y ]; do echo -n "-"; x=` expr $x + 1 `;done
-	#echo "${GREEN}                 ;;         ;;       ;;            ,''.          ;;                          "
-	#echo ",,               ;;         ;;';; ;;';;           :              ;;  ''            ;;  ..  ''      "
-	#echo ";;''; ;'';;  ;;'';;  ,;';;  ;;  ;;   ;; ,;';;     '..   ,;';;    ;;''    ,;';;     ;;''  . ;;     "          
-	#echo ";;  ;;   ;; ;;   ;; ;       ;;       ;; ;    ;   ,,  ': ;    ;   ;;,,    ;    ;    ;;      ;;      "
-	#echo ";;  ;;   ;;  ;;..;;  ';.;;  ;;       ;; ';.;; '.   ..'  ';.;; '. ;;  ,,  ';.;; '.  ;;      ;;         "
 	echo "${GREEN}mdcMasakari"
 	echo "Success :-)${RESET}"
 }
@@ -131,7 +126,7 @@ mdc_set_conf_value () {
 	debug="false"
     fi
     
-    LOG_DIR=${LOG_DIR:-"var/log/masakari"}
+    LOG_DIR="var/log/masakari"
     check_config_type 'string' LOG_DIR $LOG_DIR ; result=` expr $result + $? `
     if [ ! -e ${LOG_DIR} ]; then
         mkdir -p ${LOG_DIR}
@@ -167,22 +162,11 @@ mdc_set_conf_value () {
 	CLUSTER_PORTS=${CLUSTER_PORTS:-""}
 	check_config_type 'string' CLUSTER_PORTS $CLUSTER_PORTS ; result=` expr $result + $? `
     fi
-    www_authenticate_uri=${www_authenticate_uri:-"http://controller:5000/v3"}
-    check_config_type 'string' www_authenticate_uri $www_authenticate_uri ; result=` expr $result + $? `
-    
+        
     region=${region:-"RegionOne"}
     check_config_type 'string' region $region ; result=` expr $result + $? `
 
-    OS_AUTH_URL=${auth_url:-"http://controller:5000/v3"}
-    check_config_type 'string' OS_AUTH_URL $OS_AUTH_URL ; result=` expr $result + $? `
-    
-    memcached_servers=${memcached_servers:-"controller:11211"}
-    check_config_type 'string' memcached_servers $memcached_servers ; result=` expr $result + $? `
-    
-    
-    signing_dir=${signing_dir:-"/var/cache/masakari"}
-    check_config_type 'string' signing_dir $signing_dir ; result=` expr $result + $? `
-    
+
     OS_PROJECT_DOMAIN_ID=${project_domain_id:-"default"}
     check_config_type 'string' OS_PROJECT_DOMAIN_ID $OS_PROJECT_DOMAIN_ID ; result=` expr $result + $? `
     
@@ -195,10 +179,10 @@ mdc_set_conf_value () {
     OS_USER_DOMAIN_NAME=${user_domain_name:-"Default"}
     check_config_type 'string' OS_USER_DOMAIN_NAME $OS_USER_DOMAIN_NAME ; result=` expr $result + $? `
     
-    OS_PROJECT_NAME=${project_name:-""}
+    OS_PROJECT_NAME=${project_name:-"Service"}
     check_config_type 'string' OS_PROJECT_NAME $OS_PROJECT_NAME ; result=` expr $result + $? `
     
-    OS_USERNAME=${user_name:-""}
+    OS_USERNAME=${user_name:-"admin"}
     check_config_type 'string' OS_USERNAME $OS_USERNAME ; result=` expr $result + $? `
     
     OS_PASSWORD=${password:-""}
@@ -216,77 +200,32 @@ mdc_set_conf_value () {
     return $result
 }
 
-# this function will print all values
-#
-print (){
-	echo "LOG_LEVEL=$LOG_LEVEL"
-	echo "CONTROLLER_IP $CONTROLLER_IP"
-	echo "LOCAL_CONF $LOCAL_CONF"
-	echo "MASAKARI_DIR $MASAKARI_DIR"
-	echo "TOP_DIR $TOP_DIR"
-	echo "MASAKARIMONITOR_DIR $MASAKARIMONITOR_DIR"
-	echo "ETC_DIR $ETC_DIR"
-	echo "LOGDIR $LOGDIR"
-	echo "LOGFILE $LOGFILE"
-	echo "MASAKARI_CONF $MASAKARI_CONF"
-	echo "LOCAL_CONF $LOCAL_CONF"
-	echo "MASAKARIMONITOR_CONF $MASAKARIMONITOR_CONF"
-	echo "FNAME $FNAME"
-	echo "my_ip $my_ip"
-	echo "HOST_NAME $HOST_NAME"
-	echo "debug $debug"
-	echo "LOG_LEVEL $LOG_LEVEL"
-	echo "LOG_DIR $LOG_DIR"
-	echo "USER_PASSWORD $USER_PASSWORD"
-	echo "NOVA_PASSWORD $NOVA_PASSWORD"
-	echo "DB_PASSWORD $DB_PASSWORD"
-	echo "MYSQL_USER $MYSQL_USER"
-	echo "MYSQL_PASSWORD $MYSQL_PASSWORD"
-	echo "BIND_IP $BIND_IP"
-	echo "CLUSTER_NODES $CLUSTER_NODES"
-	echo "CLUSTER_INTERFACES $CLUSTER_INTERFACES"
-	echo "CLUSTER_PORTS $CLUSTER_PORTS             "
-	echo "www_authenticate_uri $www_authenticate_uri  "
-	echo "region $region"
-	echo "OS_AUTH_URL $OS_AUTH_URL"
-	echo "memcached_servers $memcached_servers"
-	echo "signing_dir $signing_dir"
-	echo "OS_PROJECT_DOMAIN_ID $OS_PROJECT_DOMAIN_ID"
-	echo "OS_PROJECT_DOMAIN_NAME $OS_PROJECT_DOMAIN_NAME   "
-	echo "OS_USER_DOMAIN_ID $OS_USER_DOMAIN_ID "
-	echo "OS_USER_DOMAIN_NAME $OS_USER_DOMAIN_NAME"
-	echo "OS_PROJECT_NAME $OS_PROJECT_NAME   "
-	echo "OS_USERNAME $OS_USERNAME"
-	echo "OS_PASSWORD $OS_PASSWORD"
-	echo "OS_IDENTITY_API_VERSION $OS_IDENTITY_API_VERSION"
-	echo "OS_IMAGE_API_VERSION $OS_IMAGE_API_VERSION"
-	echo "auth_type $auth_type"
-}
+
 # This function used for keystone authentication
 # Output : 0 : Success
 #
 mdc_admin-openrc(){
 	echo_console "++-- . admin-openrc"
 	echo_console "++-- export OS_PROJECT_DOMAIN_ID=$OS_PROJECT_DOMAIN_ID"
-	#export OS_PROJECT_DOMAIN_ID=$OS_PROJECT_DOMAIN_ID
+	export OS_PROJECT_DOMAIN_ID=$OS_PROJECT_DOMAIN_ID
 	echo_console "++-- export OS_USER_DOMAIN_ID=$OS_USER_DOMAIN_ID"
-	#export OS_USER_DOMAIN_ID=$OS_USER_DOMAIN_ID
+	export OS_USER_DOMAIN_ID=$OS_USER_DOMAIN_ID
 	echo_console "++-- export OS_PROJECT_DOMAIN_NAME=$OS_PROJECT_DOMAIN_NAME"
-	#export OS_PROJECT_DOMAIN_NAME=$OS_PROJECT_DOMAIN_NAME
+	export OS_PROJECT_DOMAIN_NAME=$OS_PROJECT_DOMAIN_NAME
 	echo_console "++-- export OS_USER_DOMAIN_NAME=$OS_USER_DOMAIN_NAME"
-	#export OS_USER_DOMAIN_NAME=$OS_USER_DOMAIN_NAME
+	export OS_USER_DOMAIN_NAME=$OS_USER_DOMAIN_NAME
 	echo_console "++-- export OS_PROJECT_NAME=admin"
-	#export OS_PROJECT_NAME=admin
+	export OS_PROJECT_NAME=admin
 	echo_console "++-- export OS_USERNAME=$OS_USERNAME"
-	#export OS_USERNAME=$OS_USERNAME
+	export OS_USERNAME=$OS_USERNAME
 	echo_console "++-- export OS_PASSWORD=$OS_PASSWORD"
-	#export OS_PASSWORD=$OS_PASSWORD
-	echo_console "++-- export OS_AUTH_URL=$OS_AUTH_URL"
-	#export OS_AUTH_URL=$OS_AUTH_URL
+	export OS_PASSWORD=$OS_PASSWORD
+	echo_console "++-- export OS_AUTH_URL=http://controller:5000/v3"
+	export OS_AUTH_URL=http://controller:5000/v3
 	echo_console "++-- export OS_IDENTITY_API_VERSION=3"
-	#export OS_IDENTITY_API_VERSION=$OS_IDENTITY_API_VERSION
+	export OS_IDENTITY_API_VERSION=$OS_IDENTITY_API_VERSION
 	echo_console "++-- export OS_IMAGE_API_VERSION=$OS_IMAGE_API_VERSION"
-	#export OS_IMAGE_API_VERSION=$OS_IMAGE_API_VERSION
+	export OS_IMAGE_API_VERSION=$OS_IMAGE_API_VERSION
 	return 0
 }
 
@@ -298,17 +237,17 @@ mdc_create_masakari_user() {
 	mdc_admin-openrc
 	result=$?
 	echo_console "++-- openstack user create --domain default --password $USER_PASSWORD $openstack_user"
-	#openstack user create --domain default --password $USER_PASSWORD $openstack_user ; result=` expr $result + $? `
+	openstack user create --domain default --password $USER_PASSWORD $openstack_user ; result=` expr $result + $? `
 	echo_console "++-- openstack role add --project service --user $openstack_user admin"
-	#openstack role add --project service --user $openstack_user admin ; result=` expr $result + $? `
+	openstack role add --project service --user $openstack_user admin ; result=` expr $result + $? `
 	echo_console "++-- openstack service create --name $openstack_user --description \"OpenStack Compute\" instance-ha"
-	#openstack service create --name $openstack_user --description "OpenStack Compute" instance-ha ; result=` expr $result + $? `
+	openstack service create --name $openstack_user --description "OpenStack Compute" instance-ha ; result=` expr $result + $? `
 	echo_console "++-- openstack endpoint create --region $region $openstack_user public http://controller:15868/v1/%\(tenant_id\)s"
-	#openstack endpoint create --region $region $openstack_user public http://controller:15868/v1/%\(tenant_id\)s ; result=` expr $result + $? `
+	openstack endpoint create --region $region $openstack_user public http://controller:15868/v1/%\(tenant_id\)s ; result=` expr $result + $? `
 	echo_console "++-- openstack endpoint create --region $region $openstack_user internal http://controller:15868/v1/%\(tenant_id\)s"
-	#openstack endpoint create --region $region $openstack_user internal http://controller:15868/v1/%\(tenant_id\)s ; result=` expr $result + $? `
+	openstack endpoint create --region $region $openstack_user internal http://controller:15868/v1/%\(tenant_id\)s ; result=` expr $result + $? `
 	echo_console "++-- openstack endpoint create --region $region $openstack_user admin http://controller:15868/v1/%\(tenant_id\)s"
-	#openstack endpoint create --region $region $openstack_user admin http://controller:15868/v1/%\(tenant_id\)s ; result=` expr $result + $? `
+	openstack endpoint create --region $region $openstack_user admin http://controller:15868/v1/%\(tenant_id\)s ; result=` expr $result + $? `
 	return $result
 }
 
@@ -319,10 +258,10 @@ mdc_create_masakari_database() {
 	MYSQL_HOST="localhost"
 	echo_console "++--  database bulding masakari"
 	result=$?
-	#sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "DROP DATABASE IF EXISTS $db;" ; result=` expr $result + $? `
-	#sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "CREATE DATABASE $db CHARACTER SET utf8;" ; result=` expr $result + $? `
-	#sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "GRANT ALL PRIVILEGES ON $db.* TO '$db'@'localhost' IDENTIFIED BY '$DB_PASSWORD'" ; result=` expr $result + $? `
-	#sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "GRANT ALL PRIVILEGES ON $db.* TO '$db'@'%' IDENTIFIED BY '$DB_PASSWORD'" ; result=` expr $result + $? `
+	sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "DROP DATABASE IF EXISTS $db;" ; result=` expr $result + $? `
+	sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "CREATE DATABASE $db CHARACTER SET utf8;" ; result=` expr $result + $? `
+	sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "GRANT ALL PRIVILEGES ON $db.* TO '$db'@'localhost' IDENTIFIED BY '$DB_PASSWORD'" ; result=` expr $result + $? `
+	sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "GRANT ALL PRIVILEGES ON $db.* TO '$db'@'%' IDENTIFIED BY '$DB_PASSWORD'" ; result=` expr $result + $? `
 	return $result
 }
 
@@ -387,7 +326,7 @@ mdc_enable_masakari_service () {
 		msg=`sudo systemctl enable masakari-processmonitor.service`
 		echo_console "${CYAN}++-- $msg${RESET}"
 	fi
-	#sudo systemctl daemon-reload
+	sudo systemctl daemon-reload
 	echo_console "${CYAN}++-- Copying The Services Ends${RESET}"
 }
 
@@ -398,23 +337,23 @@ mdc_install_masakari () {
 		cd $MASAKARI_DIR
 		result=$?
 		echo_console "++-- installing masakari controller service"
-		#sudo python setup.py install --record installedfiles.txt ; result=` expr $result + $? `
+		sudo python setup.py install --record installedfiles.txt ; result=` expr $result + $? `
 		cd $TOP_DIR
 		echo_console "++-- installing python-masakariclient"
-		#sudo pip install python-masakariclient ; result=` expr $result + $? `
+		sudo pip install python-masakariclient ; result=` expr $result + $? `
 		echo_console "++-- installing masakari-dashboard"
-		#sudo pip install -e masakari-dashboard ; result=` expr $result + $? `
+		sudo pip install -e masakari-dashboard ; result=` expr $result + $? `
 	elif [ "$HOST_NAME" == "compute" ]; then
 		echo_console "++-- installing corosync pacemaker"
 		result=$?
-		#sudo apt-get install corosync pacemaker -y ; result=` expr $result + $? `
+		sudo apt-get install corosync pacemaker -y ; result=` expr $result + $? `
 		echo_console "++-- installing crm114"
-		#sudo apt install crm114 -y ; result=` expr $result + $? `
+		sudo apt install crm114 -y ; result=` expr $result + $? `
 		echo_console "++-- installing crmsh"
-		#sudo apt install crmsh -y ; result=` expr $result + $? `
+		sudo apt install crmsh -y ; result=` expr $result + $? `
 		cd $MASAKARIMONITOR_DIR
 		echo_console "++-- installing masakari-monitors"
-		#sudo python setup.py install --record installedfiles.txt ; result=` expr $result + $? `
+		sudo python setup.py install --record installedfiles.txt ; result=` expr $result + $? `
 	fi
 	mdc_enable_masakari_service
 	return $result
@@ -435,14 +374,9 @@ mdc_create_masakari_conf () {
 		sudo cp $ETC_DIR/api-paste.ini.tmp $MASAKARI_CONF/api-paste.ini -v
 		#editing masakari.conf
 		sudo sed -i "s/os_privileged_user_password = <os_privileged_user_password>.*/os_privileged_user_password = $NOVA_PASSWORD/g" $MASAKARI_CONF/masakari.conf
-		#sudo sed -i "s/log_dir = <log_dir>.*/log_dir = $LOG_DIR/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/masakari_api_listen = <listen_ip>.*/masakari_api_listen = $CONTROLLER_IP/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/<DB_PASSWORD>/$DB_PASSWORD/g" $MASAKARI_CONF/masakari.conf
-		#sudo sed -i "s/www_authenticate_uri = <www_authenticate_uri>.*/www_authenticate_uri = $www_authenticate_uri/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/region = <region>.*/region = $region/g" $MASAKARI_CONF/masakari.conf
-		#sudo sed -i "s/auth_url = <auth_url>.*/auth_url = $OS_AUTH_URL/g" $MASAKARI_CONF/masakari.conf
-		#sudo sed -i "s/memcached_servers = <memcached_servers>.*/memcached_servers = $memcached_servers/g" $MASAKARI_CONF/masakari.conf
-		#sudo sed -i "s/signing_dir = <signing_dir>.*/signing_dir = $signing_dir/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/project_domain_id = <project_domain_id>.*/project_domain_id = $OS_PROJECT_DOMAIN_ID/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/project_domain_name = <project_domain_name>.*/project_domain_name = $OS_PROJECT_DOMAIN_NAME/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/user_domain_id = <user_domain_id>.*/user_domain_id = $OS_USER_DOMAIN_ID/g" $MASAKARI_CONF/masakari.conf
@@ -469,9 +403,7 @@ mdc_create_masakari_conf () {
 		#editing masakarimonitor.conf
 		sudo sed -i "s/host = <hostname>.*/host = $my_ip/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
 		sudo sed -i "s/debug = <debug>.*/debug = $debug/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
-		sudo sed -i "s/log_dir = <log_dir>.*/log_dir = $LOG_DIR/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
 		sudo sed -i "s/region = <region>.*/region = $region/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
-		sudo sed -i "s/auth_url = <auth_url>.*/auth_url = $OS_AUTH_URL/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
 		sudo sed -i "s/password = <password>.*/password = $USER_PASSWORD/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
 		sudo sed -i "s/project_domain_id = <project_domain_id>.*/project_domain_id = $OS_PROJECT_DOMAIN_ID/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
 		sudo sed -i "s/project_domain_name = <project_domain_name>.*/project_domain_name = $OS_PROJECT_DOMAIN_NAME/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
@@ -511,20 +443,19 @@ mdc_set_conf_value
 if [ $? -gt 0 ]; then echo_error "error in local.conf"; exit 1; fi
 echo_console "${CYAN}++-- masakari.sh starts${RESET}"
 
-#mdc_create_masakari_user
+mdc_create_masakari_user
 if [ $? -gt 0 ]; then echo_error "error while creating masakari user"; exit 1; fi
 
-#mdc_create_masakari_database
+mdc_create_masakari_database
 if [ $? -gt 0 ]; then echo_error "error while creating masakari database"; exit 1; fi
 
-#mdc_install_masakari
+mdc_install_masakari
 if [ $? -gt 0 ]; then echo_error "error while installing masakari service"; exit 1; fi
 
 mdc_create_masakari_conf
 if [ $? -gt 0 ]; then echo_error "error while creating masakari configuration"; exit 1; fi
 
 echo_success
-#print
 
 #end
 # new version
