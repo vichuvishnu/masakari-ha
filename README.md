@@ -12,6 +12,23 @@ $ sudo -s
 ```bash
 # vi local.conf
 ```
+* Minimun requirement
+```
+[default]
+CONTROLLER_IP="<controller ip>"
+my_ip="<host management ip>"
+LOG_LEVEL="info"
+NOVA_PASSWORD="<nova identity password>"
+DB_PASSWORD="<masakari database password>"
+MYSQL_PASSWORD="<mysql root user password>"
+[corosync]
+BIND_IP="<bind-ip>"
+CLUSTER_NODES="<nodes in cluster>"
+CLUSTER_PORTS="<corosync cluster ports>"
+CLUSTER_INTERFACES="<corosync cluster interfaces>"
+[keystone_authtoken]
+password="<keystone admin user password>"
+```
 * Now the script is ready to run 
 ```bash
 # ./masakari.sh
