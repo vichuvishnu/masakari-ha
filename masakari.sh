@@ -443,11 +443,13 @@ mdc_set_conf_value
 if [ $? -gt 0 ]; then echo_error "error in local.conf"; exit 1; fi
 echo_console "${CYAN}++-- masakari.sh starts${RESET}"
 
-mdc_create_masakari_user
-if [ $? -gt 0 ]; then echo_error "error while creating masakari user"; exit 1; fi
+if ["$HOST_NAME" == "controller" ]; then
+	mdc_create_masakari_user
+	if [ $? -gt 0 ]; then echo_error "error while creating masakari user"; exit 1; fi
 
-mdc_create_masakari_database
-if [ $? -gt 0 ]; then echo_error "error while creating masakari database"; exit 1; fi
+	mdc_create_masakari_database
+	if [ $? -gt 0 ]; then echo_error "error while creating masakari database"; exit 1; fi
+fi
 
 mdc_install_masakari
 if [ $? -gt 0 ]; then echo_error "error while installing masakari service"; exit 1; fi
