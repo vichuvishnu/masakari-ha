@@ -5,7 +5,7 @@ This scritp is under development so it may contain some bugs.To install the masa
 * Masakari Installation usiing script 1st need to clone the repository
 ```bash
 $ sudo -s
-# git clone https://github.com/vichuvishnu/mdcMasakari
+# git clone https://github.com/vichuvishnu/mdcMasakari --branch stable-old/rocky
 # cd mdcMasakari
 ```
 * Edit the local.conf file
