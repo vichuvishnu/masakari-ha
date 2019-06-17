@@ -1,0 +1,11 @@
+[Unit]
+Description=<DESCRIPTION>
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/local/bin/<SCRIPT_FILE>
+
+[Install]
+WantedBy=multi-user.target

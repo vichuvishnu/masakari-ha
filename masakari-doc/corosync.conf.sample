@@ -1,0 +1,46 @@
+# Please read the corosync.conf.5 manual page
+totem {
+        version: 2
+
+        crypto_cipher: none
+        crypto_hash: none
+
+        interface {
+                ringnumber: 0
+                bindnetaddr: 192.168.1.0
+                mcastaddr: 226.94.1.1
+                mcastport: 5405
+                ttl: 1
+        }
+        transport: udpu
+}
+
+logging {
+        fileline: off
+        to_logfile: yes
+        to_syslog: yes
+        logfile: /var/log/corosync/corosync.log
+        debug: off
+        timestamp: on
+        logger_subsys {
+                subsys: QUORUM
+                debug: on
+        }
+}
+
+nodelist {
+        node {
+                ring0_addr: 192.168.1.226
+                nodeid: 1
+        }
+        node {
+                ring0_addr: 192.168.1.231
+                nodeid: 2
+        }
+}
+quorum {
+        # Enable and configure quorum subsystem (default: off)
+        # see also corosync.conf.5 and votequorum.5
+        provider: corosync_votequorum
+        two_node: 1
+}
