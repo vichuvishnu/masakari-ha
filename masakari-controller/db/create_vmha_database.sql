@@ -1,4 +1,3 @@
-create database vm_ha;
 use vm_ha;
 create table notification_list
 (
