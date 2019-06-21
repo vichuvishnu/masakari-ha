@@ -46,7 +46,6 @@ echo_error () {
 	echo "Script exit"
 	echo "Before running masakari.sh run uninstallMasakari.sh"
 	echo "& make sure that the database (if created) is removed."
-	echo "if you get any other problems while installing masakari feel free to condact..."
 	echo "`seq -s'#' 0 $(tput cols) | tr -d '[:digit:]'`${RESET}"
 }
 
