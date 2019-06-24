@@ -22,6 +22,7 @@ SERVICE_DIR="/etc/systemd/system"
 RED=`tput setaf 1`
 GREEN=`tput setaf 2`
 CYAN=`tput setaf 6`
+YELLOW=`tput setaf 3`
 RESET=`tput sgr0`
 
 # Macros
@@ -39,21 +40,32 @@ echo_console() {
 #Argument
 #	$1 : Message
 echo_error () {
-	x=0
-	y=`tput cols`
-	while [ $x -lt $y ]; do echo -n "-"; x=` expr $x + 1 `;done
-	echo "${RED}# $1 ${RESET}"
-	echo "${RED}# :-( :-( :-(${RESET}"
+	echo "${RED}`seq -s'#' 0 $(tput cols) | tr -d '[:digit:]'`"
+	echo "ERROR MSG: $1 "
+	echo ":-( :-( :-("
+	echo "Script exit"
+	echo "Before running masakari.sh run uninstallMasakari.sh"
+	echo "& make sure that the database (if created) is removed."
+	echo "`seq -s'#' 0 $(tput cols) | tr -d '[:digit:]'`${RESET}"
 }
 
 #This function outputs the success print
 #
 echo_success() {
-	x=0
-	y=`tput cols`
-	while [ $x -lt $y ]; do echo -n "-"; x=` expr $x + 1 `;done
+	echo "${GREEN}`seq -s'#' 0 $(tput cols) | tr -d '[:digit:]'`"
 	echo "${GREEN}mdcMasakari"
-	echo "Success :-)${RESET}"
+	echo "Success :-)"
+	echo "Verify Masakari:-"
+	echo -e ''$_{1..20}'\b+'
+	echo "* In controller add the create segment and add host (mininum two compute host)"
+	echo "	$ . admin-openrc"
+	echo "	$ masakari segment-create --name failover --recovery-method auto --service-type compute --description instance_ha"
+	echo "* Create an instance in host that is going to down."
+	echo "* Verify that the instance is in the correct host."
+        echo "* Poweroff the host that contain instance."
+	echo "* After a few minutes the instance is move to the reserved host"
+	echo "`seq -s'#' 0 $(tput cols) | tr -d '[:digit:]'`${RESET}"
+
 }
 # Check the value is correct type
 # Argument
@@ -83,11 +95,11 @@ check_config_type() {
     esac
 
     if [ $ret -eq 1 ] ; then
-        echo_console "config file parameter error. [${LOCAL_CONF}:${parameter_name}]"
+        echo "${YELLOW}++--  config file parameter error. [${LOCAL_CONF}:${parameter_name}]${RESET}"
         return 1
     fi
 
-    echo_console "config file parameter : ${parameter_name}=${value}"
+    echo "${YELLOW}++--  config file parameter : ${parameter_name}=${value}${RESET}"
     return 0
 }
 
@@ -206,25 +218,25 @@ mdc_set_conf_value () {
 #
 mdc_admin-openrc(){
 	echo_console "++-- . admin-openrc"
-	echo_console "++-- export OS_PROJECT_DOMAIN_ID=$OS_PROJECT_DOMAIN_ID"
+	echo "${CYAN}++--  export OS_PROJECT_DOMAIN_ID=$OS_PROJECT_DOMAIN_ID"
 	export OS_PROJECT_DOMAIN_ID=$OS_PROJECT_DOMAIN_ID
-	echo_console "++-- export OS_USER_DOMAIN_ID=$OS_USER_DOMAIN_ID"
+	echo "++--  export OS_USER_DOMAIN_ID=$OS_USER_DOMAIN_ID"
 	export OS_USER_DOMAIN_ID=$OS_USER_DOMAIN_ID
-	echo_console "++-- export OS_PROJECT_DOMAIN_NAME=$OS_PROJECT_DOMAIN_NAME"
+	echo "++--  export OS_PROJECT_DOMAIN_NAME=$OS_PROJECT_DOMAIN_NAME"
 	export OS_PROJECT_DOMAIN_NAME=$OS_PROJECT_DOMAIN_NAME
-	echo_console "++-- export OS_USER_DOMAIN_NAME=$OS_USER_DOMAIN_NAME"
+	echo "++--  export OS_USER_DOMAIN_NAME=$OS_USER_DOMAIN_NAME"
 	export OS_USER_DOMAIN_NAME=$OS_USER_DOMAIN_NAME
-	echo_console "++-- export OS_PROJECT_NAME=admin"
+	echo "++--  export OS_PROJECT_NAME=admin"
 	export OS_PROJECT_NAME=admin
-	echo_console "++-- export OS_USERNAME=$OS_USERNAME"
+	echo "++--  export OS_USERNAME=$OS_USERNAME"
 	export OS_USERNAME=$OS_USERNAME
-	echo_console "++-- export OS_PASSWORD=$OS_PASSWORD"
+	echo "++--  export OS_PASSWORD=$OS_PASSWORD"
 	export OS_PASSWORD=$OS_PASSWORD
-	echo_console "++-- export OS_AUTH_URL=http://controller:5000/v3"
+	echo "++--  export OS_AUTH_URL=http://controller:5000/v3"
 	export OS_AUTH_URL=http://controller:5000/v3
-	echo_console "++-- export OS_IDENTITY_API_VERSION=3"
+	echo "++--  export OS_IDENTITY_API_VERSION=3"
 	export OS_IDENTITY_API_VERSION=$OS_IDENTITY_API_VERSION
-	echo_console "++-- export OS_IMAGE_API_VERSION=$OS_IMAGE_API_VERSION"
+	echo "++--  export OS_IMAGE_API_VERSION=$OS_IMAGE_API_VERSION${RESET}"
 	export OS_IMAGE_API_VERSION=$OS_IMAGE_API_VERSION
 	return 0
 }
@@ -439,11 +451,12 @@ mdc_create_masakari_conf () {
 #main routine
 result=0
 FNAME="masakari.sh"
+echo_console "${CYAN}++-- masakari.sh configuration${RESET}"
 mdc_set_conf_value
 if [ $? -gt 0 ]; then echo_error "error in local.conf"; exit 1; fi
 echo_console "${CYAN}++-- masakari.sh starts${RESET}"
 
-if ["$HOST_NAME" == "controller" ]; then
+if [ "$HOST_NAME" == "controller" ]; then
 	mdc_create_masakari_user
 	if [ $? -gt 0 ]; then echo_error "error while creating masakari user"; exit 1; fi
 
