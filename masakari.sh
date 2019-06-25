@@ -2,7 +2,8 @@
 #openstack masakari installation script
 #usage ./masakari.sh
 #
-
+# Version
+version=16.00
 
 # Directories
 TOP_DIR=$(cd $(dirname "$0") && pwd)
@@ -455,6 +456,9 @@ echo_console "${CYAN}++-- masakari.sh configuration${RESET}"
 mdc_set_conf_value
 if [ $? -gt 0 ]; then echo_error "error in local.conf"; exit 1; fi
 echo_console "${CYAN}++-- masakari.sh starts${RESET}"
+current_version=`lsb_release -r | awk '{print $2}'`
+f=`echo $current_version'>'$version | bc -l`
+if [ $f -ne 1 ];then echo_error "ubuntu version is outdated [version:$current_version]"; exit 0;fi
 
 if [ "$HOST_NAME" == "controller" ]; then
 	mdc_create_masakari_user
