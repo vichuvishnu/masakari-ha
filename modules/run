@@ -1,0 +1,78 @@
+#!/bin/bash
+#
+# Copyright 2019 vishnu <vishnukb@acceleronlabs.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA 02110-1301, USA.
+# Author        : vishnu
+# FileName      : run
+# Description	: this script has 3 level of state to run masakari script
+#				  1 :- set configuration
+#				  2 :- Install
+#				  3 :- Create masakari service configuration and database 
+#						if needed.
+
+source $TOP_DIR/modules/include
+source $TOP_DIR/modules/log
+source $TOP_DIR/modules/database
+source $TOP_DIR/modules/user
+source $TOP_DIR/modules/install
+source $TOP_DIR/modules/enableservice
+
+function RUN_STATE {
+	option=$1
+	case $option in
+		1)
+			echo_console "${CYAN}++-- masakari.sh configuration${RESET}"
+			# Checks the configuration to run the script
+			mdc_set_conf_value $LOCAL_CONF
+			if [ $? -gt 0 ]; then echo_error "error in local.conf"; exit 1; fi
+			;;
+		2)
+			if [ "$HOST_NAME" == "controller" ]; then
+				mdc_create_masakari_user
+				if [ $? -gt 0 ]; then echo_error "error while creating masakari user"; exit 1; fi
+			fi
+			mdc_install_masakari $HOST_NAME
+				if [ $? -gt 0 ]; then echo_error "error while installing masakari service"; exit 1; fi
+			;;
+		3)
+			if [ "$HOST_NAME" == "controller" ]; then
+				mdc_create_masakari_database masakari
+				if [ $? -gt 0 ]; then echo_error "error while creating masakari database"; exit 1; fi
+			fi
+			mdc_create_masakari_conf $HOST_NAME
+			if [ $? -gt 0 ]; then echo_error "error while creating masakari configuration"; exit 1; fi
+			;;
+		*)
+			echo "${RED}[UNKNOWN_ERROR]${RESET}:I thinks is outdated or something wrong in the script"
+			exit 0
+			;;
+	esac
+}
+
+function VERSION_CHECK {
+	# Checking for the version the script is designed to run on ubuntu 16 and above
+	# if the version is less than 16 then script don't work
+	version=$1
+	current_version=`lsb_release -r | awk '{print $2}'`
+	f=`echo $current_version'>'$version | bc -l`
+	if [ $f -ne 1 ];then echo_error "ubuntu version is outdated [version:$current_version]"; exit 0;fi
+}
+
+function START { echo_console "++-- mdcMasakari Installation Begin"; }
+
+function END { echo_success ; }
+

@@ -1,0 +1,171 @@
+#!/bin/bash
+#
+# Copyright 2019 vishnu <vishnukb@acceleronlabs.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA 02110-1301, USA.
+# Author        : vishnu
+# FileName      : log
+# Description   : For checking local.conf file
+
+
+# Check the value is correct type
+# Argument
+#   $1: Type
+#   $2: Parameter Name
+#   $3: Value
+# Return
+#   0: The value is correct type
+#   1: The value is not correct type
+function check_config_type {
+    expected_type=$1
+    parameter_name=$2
+    value=$3
+
+    ret=0
+    case $expected_type in
+        int)
+            expr $value + 1 > /dev/null 2>&1
+            if [ $? -ge 2 ]; then ret=1; fi
+            ;;
+        string)
+            if [ -z $value ] ; then ret=1; fi
+            ;;
+        *)
+            ret=1
+            ;;
+    esac
+
+    if [ $ret -eq 1 ] ; then
+        echo "${RED}++--  config file parameter error. [${LOCAL_CONF}:${parameter_name}]${RESET}"
+        return 1
+    fi
+
+    echo "${YELLOW}++--  config file parameter : ${parameter_name}=${value}${RESET}"
+    return 0
+}
+
+# This function reads the configuration file and set the value.
+# If invalid value is set, return 1.
+# Return value
+#   0 : Setting completion
+#   1 : Reading failure of the configuration or invalid setting value
+function mdc_set_conf_value {
+    # Read the configuration file
+    source $1 > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+	msg="config file read error. [$1]"
+        echo_console "$msg"
+        return 1
+    fi
+    
+    CONTROLLER_IP=${CONTROLLER_IP:-""}
+    check_config_type 'string' CONTROLLER_IP $CONTROLLER_IP
+    result=$?
+
+    my_ip=${my_ip:-""}
+    check_config_type 'string' my_ip $my_ip ; result=` expr $result + $? `
+        
+    if [ "$my_ip" == "$CONTROLLER_IP" ]; then
+	HOST_NAME="controller"
+    else
+	HOST_NAME="compute"
+    fi
+    
+    LOG_LEVEL=${LOG_LEVEL:-"info"}
+    check_config_type 'string' LOG_LEVEL $LOG_LEVEL ; result=` expr $result + $? `
+    if [ "$LOG_LEVEL" == "debug" ]; then
+	debug="true"
+    else
+	debug="false"
+    fi
+    
+    LOG_DIR=${LOG_DIR:-""}
+    check_config_type 'string' LOG_DIR $LOG_DIR ; result=` expr $result + $? `
+    if [ ! -e ${LOG_DIR} ]; then
+        mkdir -p ${LOG_DIR}
+    fi
+    
+    USER_PASSWORD=${USER_PASSWORD:-""}
+    check_config_type 'string' USER_PASSWORD $USER_PASSWORD ; result=` expr $result + $? `
+    
+    NOVA_PASSWORD=${NOVA_PASSWORD:-""}
+    check_config_type 'string' NOVA_PASSWORD $NOVA_PASSWORD ; result=` expr $result + $? `
+    
+    DB_PASSWORD=${DB_PASSWORD:-""}
+    check_config_type 'string' DB_PASSWORD $DB_PASSWORD ; result=` expr $result + $? `
+    
+    MYSQL_USER=${MYSQL_USER:-"root"}
+    check_config_type 'string' MYSQL_USER $MYSQL_USER ; result=` expr $result + $? `
+    
+    MYSQL_PASSWORD=${MYSQL_PASSWORD:-""}
+    check_config_type 'string' MYSQL_PASSWORD $MYSQL_PASSWORD ; result=` expr $result + $? `
+    
+    
+    if [ $HOST_NAME == "compute" ]; then
+	BIND_IP=${BIND_IP:-""}
+	check_config_type 'string' BIND_IP $BIND_IP ; result=` expr $result + $? `
+	
+	CLUSTER_NODES=${CLUSTER_NODES:-""}
+	check_config_type 'string' CLUSTER_NODES $CLUSTER_NODES ; result=` expr $result + $? `
+	IFS=', ' read -r -a COMPUTE <<< "$CLUSTER_NODES"
+	
+	CLUSTER_INTERFACES=${CLUSTER_INTERFACES:-""}
+	check_config_type 'string' CLUSTER_INTERFACES $CLUSTER_INTERFACES ; result=` expr $result + $? `
+		
+	CLUSTER_PORTS=${CLUSTER_PORTS:-""}
+	check_config_type 'string' CLUSTER_PORTS $CLUSTER_PORTS ; result=` expr $result + $? `
+    fi
+        
+    region=${region:-"RegionOne"}
+    check_config_type 'string' region $region ; result=` expr $result + $? `
+
+
+    OS_PROJECT_DOMAIN_ID=${project_domain_id:-"default"}
+    check_config_type 'string' OS_PROJECT_DOMAIN_ID $OS_PROJECT_DOMAIN_ID ; result=` expr $result + $? `
+    
+    OS_PROJECT_DOMAIN_NAME=${project_domain_name:-"Default"}
+    check_config_type 'string' OS_PROJECT_DOMAIN_NAME $OS_PROJECT_DOMAIN_NAME ; result=` expr $result + $? `
+    
+    OS_USER_DOMAIN_ID=${user_domain_id:-"default"}
+    check_config_type 'string' OS_USER_DOMAIN_ID $OS_USER_DOMAIN_ID ; result=` expr $result + $? `
+    
+    OS_USER_DOMAIN_NAME=${user_domain_name:-"Default"}
+    check_config_type 'string' OS_USER_DOMAIN_NAME $OS_USER_DOMAIN_NAME ; result=` expr $result + $? `
+    
+    OS_PROJECT_NAME=${project_name:-"Service"}
+    check_config_type 'string' OS_PROJECT_NAME $OS_PROJECT_NAME ; result=` expr $result + $? `
+    
+    OS_USERNAME=${user_name:-"admin"}
+    check_config_type 'string' OS_USERNAME $OS_USERNAME ; result=` expr $result + $? `
+    
+    OS_PASSWORD=${password:-""}
+    check_config_type 'string' OS_PASSWORD $OS_PASSWORD ; result=` expr $result + $? `
+    
+    OS_IDENTITY_API_VERSION=${identity_api_version:-3}
+    check_config_type 'int' OS_IDENTITY_API_VERSION $OS_IDENTITY_API_VERSION ; result=` expr $result + $? `
+    
+    OS_IMAGE_API_VERSION=${image_api_version:-2}
+    check_config_type 'int' OS_IMAGE_API_VERSION $OS_IMAGE_API_VERSION ; result=` expr $result + $? `
+    
+    auth_type=${auth_type:-"password"}
+    check_config_type 'string' auth_type $auth_type ; result=` expr $result + $? `
+
+    OS_AUTH_URL=${auth_url:-""}
+    check_config_type 'string' OS_AUTH_URL $auth_url ; result=` expr $result + $? `
+       
+    return $result
+}
+

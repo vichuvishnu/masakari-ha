@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# Copyright 2019 vishnu <vishnukb@acceleronlabs.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA 02110-1301, USA.
+# Author        : vishnu
+# FileName      : user
+
+mdc_admin-openrc(){
+	echo_console "++-- . admin-openrc"
+	touch admin-openrc
+	echo "${CYAN}++--  export OS_PROJECT_DOMAIN_ID=$OS_PROJECT_DOMAIN_ID${RESET}"
+	echo "export OS_PROJECT_DOMAIN_ID=$OS_PROJECT_DOMAIN_ID" > admin-openrc
+	echo "${CYAN}++--  export OS_USER_DOMAIN_ID=$OS_USER_DOMAIN_ID${RESET}"
+	echo "export OS_USER_DOMAIN_ID=$OS_USER_DOMAIN_ID" >> admin-openrc
+	echo "${CYAN}++--  export OS_PROJECT_DOMAIN_NAME=$OS_PROJECT_DOMAIN_NAME${RESET}"
+	echo "export OS_PROJECT_DOMAIN_NAME=$OS_PROJECT_DOMAIN_NAME" >> admin-openrc
+	echo "${CYAN}++--  export OS_USER_DOMAIN_NAME=$OS_USER_DOMAIN_NAME${RESET}"
+	echo "export OS_USER_DOMAIN_NAME=$OS_USER_DOMAIN_NAME" >> admin-openrc
+	echo "${CYAN}++--  export OS_PROJECT_NAME=admin${RESET}"
+	echo "export OS_PROJECT_NAME=admin" >> admin-openrc
+	echo "${CYAN}++--  export OS_USERNAME=$OS_USERNAME${RESET}"
+	echo "export OS_USERNAME=$OS_USERNAME" >> admin-openrc
+	echo "${CYAN}++--  export OS_PASSWORD=$OS_PASSWORD${RESET}"
+	echo "export OS_PASSWORD=$OS_PASSWORD" >> admin-openrc
+	echo "${CYAN}++--  export OS_AUTH_URL=$OS_AUTH_URL${RESET}"
+	echo "export OS_AUTH_URL=$OS_AUTH_URL" >> admin-openrc
+	echo "${CYAN}++--  export OS_IDENTITY_API_VERSION=3${RESET}"
+	echo "export OS_IDENTITY_API_VERSION=3" >> admin-openrc
+	echo "${CYAN}++--  export OS_IMAGE_API_VERSION=$OS_IMAGE_API_VERSION${RESET}"
+	echo "export OS_IMAGE_API_VERSION=$OS_IMAGE_API_VERSION" >> admin-openrc
+	. admin-openrc
+	return 0
+}
+
+# This function is used to create masakari user and requirements
+# 
+mdc_create_masakari_user() {
+	echo_console "++-- creating openstack user masakari"
+	openstack_user="masakari"
+	mdc_admin-openrc
+	result=$?
+	echo_console "++-- openstack user create --domain default --password $USER_PASSWORD $openstack_user"
+	openstack user create --domain default --password $USER_PASSWORD $openstack_user ; result=` expr $result + $? `
+	echo_console "++-- openstack role add --project service --user $openstack_user admin"
+	openstack role add --project service --user $openstack_user admin ; result=` expr $result + $? `
+	echo_console "++-- openstack service create --name $openstack_user --description \"OpenStack Compute\" instance-ha"
+	openstack service create --name $openstack_user --description "OpenStack Compute" instance-ha ; result=` expr $result + $? `
+	echo_console "++-- openstack endpoint create --region $region $openstack_user public http://controller:15868/v1/%\(tenant_id\)s"
+	openstack endpoint create --region $region $openstack_user public http://controller:15868/v1/%\(tenant_id\)s ; result=` expr $result + $? `
+	echo_console "++-- openstack endpoint create --region $region $openstack_user internal http://controller:15868/v1/%\(tenant_id\)s"
+	openstack endpoint create --region $region $openstack_user internal http://controller:15868/v1/%\(tenant_id\)s ; result=` expr $result + $? `
+	echo_console "++-- openstack endpoint create --region $region $openstack_user admin http://controller:15868/v1/%\(tenant_id\)s"
+	openstack endpoint create --region $region $openstack_user admin http://controller:15868/v1/%\(tenant_id\)s ; result=` expr $result + $? `
+	return $result
+}

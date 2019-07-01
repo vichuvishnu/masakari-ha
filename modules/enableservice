@@ -1,0 +1,87 @@
+#!/bin/bash
+#
+# Copyright 2019 vishnu <vishnukb@acceleronlabs.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA 02110-1301, USA.
+# Author        : vishnu
+# FileName      : enableservice
+
+
+#This funcrion will create services
+#
+mdc_enable_masakari_service () {
+	echo_console "${CYAN}++-- Copying The Services Started${RESET}"
+	HOST=$1
+	if [ "$HOST" == "controller" ]; then
+		# Service Script
+		msg=`sudo cp $ETC_DIR/servicescript.service.tmp $LIB_SERVICE_DIR/masakari-api.service -v`
+		sudo sed -i "s/<DESCRIPTION>.*/Masakari Api/g" $LIB_SERVICE_DIR/masakari-api.service
+		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-api/g" $LIB_SERVICE_DIR/masakari-api.service
+		echo_console "${CYAN}++--$msg${RESET}"
+		msg=`ln -s $LIB_SERVICE_DIR/masakari-api.service $SERVICE_DIR -v`
+		echo_console "${CYAN}++-- $msg${RESET}"
+		msg=`sudo systemctl enable masakari-api.service`
+		echo_console "${CYAN}++-- $msg${RESET}"
+		
+		msg=`sudo cp $ETC_DIR/servicescript.service.tmp $LIB_SERVICE_DIR/masakari-engine.service -v`
+		sudo sed -i "s/<DESCRIPTION>.*/Masakari Engine/g" $LIB_SERVICE_DIR/masakari-engine.service
+		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-engine/g" $LIB_SERVICE_DIR/masakari-engine.service
+		echo_console "${CYAN}++-- $msg${RESET}"
+		msg=`ln -s $LIB_SERVICE_DIR/masakari-engine.service $SERVICE_DIR -v`
+		echo_console "${CYAN}++-- $msg${RESET}"
+		msg=`sudo systemctl enable masakari-engine.service`
+		echo_console "${CYAN}++-- $msg${RESET}"
+		
+		msg=`sudo cp $ETC_DIR/servicescript.service.tmp $LIB_SERVICE_DIR/masakari-wsgi.service -v`
+		sudo sed -i "s/<DESCRIPTION>.*/Masakari Wsgi/g" $LIB_SERVICE_DIR/masakari-wsgi.service
+		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-wsgi/g" $LIB_SERVICE_DIR/masakari-wsgi.service
+		echo_console "${CYAN}++-- $msg${RESET}"
+		msg=`ln -s $LIB_SERVICE_DIR/masakari-wsgi.service $SERVICE_DIR -v`
+		echo_console "${CYAN}++-- $msg${RESET}"
+		msg=`sudo systemctl enable masakari-wsgi.service`
+		echo_console "${CYAN}++-- $msg${RESET}"
+	elif [ "$HOST" == "compute" ]; then
+		# Service Script
+		msg=`sudo cp $ETC_DIR/servicescript.service.tmp $LIB_SERVICE_DIR/masakari-hostmonitor.service -v`
+		sudo sed -i "s/<DESCRIPTION>.*/Masakari Hostmonitor/g" $LIB_SERVICE_DIR/masakari-hostmonitor.service
+		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-hostmonitor/g" $LIB_SERVICE_DIR/masakari-hostmonitor.service
+		echo_console "${CYAN}++-- $msg${RESET}"
+		msg=`ln -s $LIB_SERVICE_DIR/masakari-hostmonitor.service $SERVICE_DIR -v`
+		echo_console "${CYAN}++-- $msg${RESET}"
+		msg=`sudo systemctl enable masakari-hostmonitor.service`
+		echo_console "${CYAN}++-- $msg${RESET}"
+		
+		msg=`sudo cp $ETC_DIR/servicescript.service.tmp $LIB_SERVICE_DIR/masakari-instancemonitor.service -v`
+		sudo sed -i "s/<DESCRIPTION>.*/Masakari Instancemonitor/g" $LIB_SERVICE_DIR/masakari-instancemonitor.service
+		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-instancemonitor/g" $LIB_SERVICE_DIR/masakari-instancemonitor.service
+		echo_console "${CYAN}++-- $msg${RESET}"
+		msg=`ln -s $LIB_SERVICE_DIR/masakari-instancemonitor.service $SERVICE_DIR -v`
+		echo_console "${CYAN}++-- $msg${RESET}"
+		msg=`sudo systemctl enable masakari-instancemonitor.service`
+		echo_console "${CYAN}++-- $msg${RESET}"
+		
+		msg=`sudo cp $ETC_DIR/servicescript.service.tmp $LIB_SERVICE_DIR/masakari-processmonitor.service -v`
+		sudo sed -i "s/<DESCRIPTION>.*/Masakari Processmonitor/g" $LIB_SERVICE_DIR/masakari-processmonitor.service
+		sudo sed -i "s/<SCRIPT_FILE>.*/masakari-processmonitor/g" $LIB_SERVICE_DIR/masakari-processmonitor.service
+		echo_console "${CYAN}++-- $msg${RESET}"
+		msg=`ln -s $LIB_SERVICE_DIR/masakari-processmonitor.service $LIB_SERVICE_DIR -v`
+		echo_console "${CYAN}++-- $msg${RESET}"
+		msg=`sudo systemctl enable masakari-processmonitor.service`
+		echo_console "${CYAN}++-- $msg${RESET}"
+	fi
+	#sudo systemctl daemon-reload
+	echo_console "${CYAN}++-- Copying The Services Ends${RESET}"
+}

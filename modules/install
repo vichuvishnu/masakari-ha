@@ -1,0 +1,130 @@
+#!/bin/bash
+#
+# Copyright 2019 vishnu <vishnukb@acceleronlabs.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA 02110-1301, USA.
+# Author        : vishnu
+# FileName      : install
+
+
+# This function will install the masakari services
+#
+mdc_install_masakari () {
+	HOST=$1
+	if [ "$HOST" == "controller" ]; then
+		cd $MASAKARI_DIR
+		result=$?
+		echo_console "++-- installing masakari controller service"
+		#sudo python setup.py install --record installedfiles.txt ; result=` expr $result + $? `
+		cd $TOP_DIR
+		echo_console "++-- installing python-masakariclient"
+		#sudo pip install python-masakariclient ; result=` expr $result + $? `
+		echo_console "++-- installing masakari-dashboard"
+		#sudo pip install -e masakari-dashboard ; result=` expr $result + $? `
+	elif [ "$HOST" == "compute" ]; then
+		echo_console "++-- installing corosync pacemaker"
+		result=$?
+		#sudo apt-get install corosync pacemaker -y ; result=` expr $result + $? `
+		echo_console "++-- installing crm114"
+		#sudo apt install crm114 -y ; result=` expr $result + $? `
+		echo_console "++-- installing crmsh"
+		#sudo apt install crmsh -y ; result=` expr $result + $? `
+		cd $MASAKARIMONITOR_DIR
+		echo_console "++-- installing masakari-monitors"
+		#sudo python setup.py install --record installedfiles.txt ; result=` expr $result + $? `
+	fi
+	mdc_enable_masakari_service $HOST
+	return $result
+}
+
+# This Function will create the configuration file of masakari services
+#
+mdc_create_masakari_conf () {
+	echo_console "++-- Creating Configuration file of $HOST_NAME"
+	if [ "$HOST_NAME" == "controller" ]; then
+		if [ ! -e ${MASAKARI_CONF} ]; then
+			sudo mkdir -p ${MASAKARI_CONF}
+		fi
+		#moving configuration files.
+		echo_console "++-- cp $ETC_DIR/masakari.conf.tmp $MASAKARI_CONF/masakari.conf"
+		sudo cp $ETC_DIR/masakari.conf.tmp $MASAKARI_CONF/masakari.conf -v
+		echo_console "++-- cp $ETC_DIR/api-paste.ini.tmp $MASAKARI_CONF/api-paste.ini"
+		sudo cp $ETC_DIR/api-paste.ini.tmp $MASAKARI_CONF/api-paste.ini -v
+		#editing masakari.conf
+		sudo sed -i "s/os_privileged_user_password = <os_privileged_user_password>.*/os_privileged_user_password = $NOVA_PASSWORD/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/masakari_api_listen = <listen_ip>.*/masakari_api_listen = $CONTROLLER_IP/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/<DB_PASSWORD>/$DB_PASSWORD/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/region = <region>.*/region = $region/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/project_domain_id = <project_domain_id>.*/project_domain_id = $OS_PROJECT_DOMAIN_ID/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/project_domain_name = <project_domain_name>.*/project_domain_name = $OS_PROJECT_DOMAIN_NAME/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/user_domain_id = <user_domain_id>.*/user_domain_id = $OS_USER_DOMAIN_ID/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/user_domain_name = <user_domain_name>.*/user_domain_name = $OS_USER_DOMAIN_NAME/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/project_name = <project_name>.*/project_name = $OS_PROJECT_NAME/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/username = <username>.*/username = masakari/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/password = <password>.*/password = $USER_PASSWORD/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/host = <hostname>.*/host = $my_ip/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/debug = <debug>.*/debug = $debug/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/log_dir = <log_dir>.*/debug = $LOG_DIR/g" $MASAKARI_CONF/masakari.conf
+		
+	elif [ "$HOST_NAME" == "compute" ]; then
+		if [ ! -e ${MASAKARIMONITOR_CONF} ]; then
+			sudo mkdir -p ${MASAKARIMONITOR_CONF}
+		fi
+		#moving configuration files.
+		echo_console "++-- cp $ETC_DIR/masakarimonitors.conf.tmp $MASAKARIMONITOR_CONF/masakarimonitors.conf"
+		sudo cp $ETC_DIR/masakarimonitors.conf.tmp $MASAKARIMONITOR_CONF/masakarimonitors.conf -v
+		echo_console "++-- cp $ETC_DIR/process_list.yaml.tmp $MASAKARIMONITOR_CONF/process_list.yaml"
+		sudo cp $ETC_DIR/process_list.yaml.tmp $MASAKARIMONITOR_CONF/process_list.yaml -v
+		echo_console "++-- cp $ETC_DIR/corosync.tmp /etc/corosync/corosync"
+		sudo cp $ETC_DIR/corosync.tmp /etc/default/corosync -v
+		echo_console "++-- cp $ETC_DIR/corosync.conf.tmp /etc/corosync/corosync.conf"
+		sudo cp $ETC_DIR/corosync.conf.tmp /etc/corosync/corosync.conf -v
+		#editing masakarimonitor.conf
+		sudo sed -i "s/host = <hostname>.*/host = $my_ip/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
+		sudo sed -i "s/debug = <debug>.*/debug = $debug/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
+		sudo sed -i "s/log_dir = <log_dir>.*/debug = $LOG_DIR/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
+		sudo sed -i "s/region = <region>.*/region = $region/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
+		sudo sed -i "s/password = <password>.*/password = $USER_PASSWORD/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
+		sudo sed -i "s/project_domain_id = <project_domain_id>.*/project_domain_id = $OS_PROJECT_DOMAIN_ID/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
+		sudo sed -i "s/project_domain_name = <project_domain_name>.*/project_domain_name = $OS_PROJECT_DOMAIN_NAME/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
+		sudo sed -i "s/user_domain_id = <user_domain_id>.*/user_domain_id = $OS_USER_DOMAIN_ID/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
+		sudo sed -i "s/user_domain_name = <user_domain_name>.*/user_domain_name = $OS_USER_DOMAIN_NAME/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
+		sudo sed -i "s/corosync_multicast_interfaces = <corosync_multicast_interfaces>.*/corosync_multicast_interfaces = '$CLUSTER_INTERFACES'/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
+		sudo sed -i "s/corosync_multicast_ports = <corosync_multicast_ports>.*/corosync_multicast_ports = '$CLUSTER_PORTS'/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
+		#editting corosync.conf
+		sudo sed -i "s/bindnetaddr: <bind_ip>.*/bindnetaddr: $BIND_IP/g" /etc/corosync/corosync.conf
+		size=${#COMPUTE[@]}
+		echo "nodelist {" >> /etc/corosync/corosync.conf
+		c=0
+		while [ $c -lt $size ]
+		do
+		echo "	node {
+			ring0_addr: ${COMPUTE[$c]}
+			nodeid:` expr $c + 1 ` 
+		}" >> /etc/corosync/corosync.conf
+		c=` expr $c + 1 `
+		done
+		echo "}" >> /etc/corosync/corosync.conf
+		echo "quorum {
+		# Enable and configure quorum subsystem (default: off)
+		# see also corosync.conf.5 and votequorum.5
+		provider: corosync_votequorum
+		two_node: 1
+	}" >> /etc/corosync/corosync.conf
+		
+	fi
+	return 0
+}
