@@ -88,16 +88,16 @@ function record {
 	case $choice in
 	start)
 		touch .record
-		echo "=============mdcMasakari Install Record=============" > .record
+		echo "#=============mdcMasakari Install Record=============#" > .record
 		;;
 	end)
-		echo "=============END=============" >> .record
+		echo "#=============END=============#" >> .record
 		;;
 	substart)
-		echo "++--  $2  --++" >> .record
+		echo "#++--  $2  --++#" >> .record
 		;;
 	subend)
-		echo "++--  end  --++" >> .record
+		echo "#++--  end  --++#" >> .record
 		;;
 	content)
 		echo "$2" >> .record
