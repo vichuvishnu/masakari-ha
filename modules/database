@@ -22,11 +22,12 @@
 
 #This function creates the masakari database
 #
-mdc_create_masakari_database() {
+function mdc_create_database {
 	#FNAME="create_masakari_database"
 	MYSQL_HOST="localhost"
 	db=$1
 	echo_console "++--  database bulding masakari"
+	record substart "database"
 	result=0
 	echo -e "${CYAN}++--  sudo mysql -u$MYSQL_USER -p****** -h$MYSQL_HOST -e \"DROP DATABASE IF EXISTS $db;\"${RESET}"
 	sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "DROP DATABASE IF EXISTS $db;" ; result=` expr $result + $? `
@@ -39,7 +40,18 @@ mdc_create_masakari_database() {
 	
 	echo -e "${CYAN}++--  sudo mysql -u$MYSQL_USER -p****** -h$MYSQL_HOST -e \"GRANT ALL PRIVILEGES ON $db.* TO '$db'@'%' IDENTIFIED BY '$DB_PASSWORD'\"${RESET}"
 	sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "GRANT ALL PRIVILEGES ON $db.* TO '$db'@'%' IDENTIFIED BY '$DB_PASSWORD'" ; result=` expr $result + $? `
+	if [ $result -eq 0 ]; then
+		record content "database=$db"
+		record content "password=$DB_PASSWORD"
+	fi
+	record subend
 	return $result
+}
+
+#This function drop the database
+#
+function mdc_drop_database {
+	sudo mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -h$MYSQL_HOST -e "DROP DATABASE IF EXISTS $database;"
 }
 
 

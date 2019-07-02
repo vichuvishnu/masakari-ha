@@ -54,6 +54,7 @@ function check_config_type {
     fi
 
     echo "${YELLOW}++--  config file parameter : ${parameter_name}=${value}${RESET}"
+    record content "${parameter_name}=${value}"
     return 0
 }
 
@@ -64,6 +65,7 @@ function check_config_type {
 #   1 : Reading failure of the configuration or invalid setting value
 function mdc_set_conf_value {
     # Read the configuration file
+    record substart "configuration"
     source $1 > /dev/null 2>&1
     if [ $? -ne 0 ]; then
 	msg="config file read error. [$1]"
@@ -165,7 +167,8 @@ function mdc_set_conf_value {
 
     OS_AUTH_URL=${auth_url:-""}
     check_config_type 'string' OS_AUTH_URL $auth_url ; result=` expr $result + $? `
-       
+    
+    record subend
     return $result
 }
 

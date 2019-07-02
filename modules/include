@@ -32,6 +32,7 @@ MASAKARI_CONF="/etc/masakari"
 MASAKARIMONITOR_CONF="/etc/masakarimonitors"
 LIB_SERVICE_DIR="/lib/systemd/system"
 SERVICE_DIR="/etc/systemd/system"
+MULTI_USER="/etc/systemd/system/multi-user.target.wants"
 
 #Colors
 RED=`tput setaf 1`
@@ -58,7 +59,7 @@ function echo_error {
 	echo "ERROR MSG: $1 "
 	echo ":-( :-( :-("
 	echo "Script exit"
-	echo "Before running masakari.sh run uninstallMasakari.sh"
+	echo "Before running masakari.sh run uninstall.sh"
 	echo "& make sure that the database (if created) is removed."
 	echo "`seq -s'#' 0 $(tput cols) | tr -d '[:digit:]'`${RESET}"
 }
@@ -80,4 +81,28 @@ function echo_success {
 	echo "* After a few minutes the instance is move to the reserved host"
 	echo "`seq -s'#' 0 $(tput cols) | tr -d '[:digit:]'`${RESET}"
 
+}
+
+function record {
+	choice=$1
+	case $choice in
+	start)
+		touch .record
+		echo "=============mdcMasakari Install Record=============" > .record
+		;;
+	end)
+		echo "=============END=============" >> .record
+		;;
+	substart)
+		echo "++--  $2  --++" >> .record
+		;;
+	subend)
+		echo "++--  end  --++" >> .record
+		;;
+	content)
+		echo "$2" >> .record
+		;;
+	*)
+		;;
+	esac
 }

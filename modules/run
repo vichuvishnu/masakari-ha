@@ -31,7 +31,7 @@ source $TOP_DIR/modules/user
 source $TOP_DIR/modules/install
 source $TOP_DIR/modules/enableservice
 
-function RUN_STATE {
+function RUN_INSTALL {
 	option=$1
 	case $option in
 		1)
@@ -50,7 +50,7 @@ function RUN_STATE {
 			;;
 		3)
 			if [ "$HOST_NAME" == "controller" ]; then
-				mdc_create_masakari_database masakari
+				mdc_create_database masakari
 				if [ $? -gt 0 ]; then echo_error "error while creating masakari database"; exit 1; fi
 			fi
 			mdc_create_masakari_conf $HOST_NAME
@@ -63,6 +63,44 @@ function RUN_STATE {
 	esac
 }
 
+function RUN_UNINSTALL {
+	source $TOP_DIR/.record
+	option=$1
+	if [ "$my_ip" == "$CONTROLLER_IP" ]; then
+		HOST_NAME="controller"
+    else
+		HOST_NAME="compute"
+    fi
+	case $option in
+	start)
+		echo_console "Masakari removal begining..."
+		;;
+	stop)
+		echo_console "Masakari removal ends..."
+		;;
+	database)
+		if [ "$HOST_NAME" == "controller" ]; then
+			echo_console "removing $database"
+			mdc_drop_database $database
+		fi
+		;;
+	service_stop)
+		mdc_stop_masakariServices $HOST_NAME
+		;;
+	uninstall)
+		;;
+	conf)
+		mdc_remove_masakariconif_files $HOST_NAME
+		;;
+	user)
+		if [ "$HOST_NAME" == "controller" ]; then
+			mdc_remove_masakariuser
+		fi
+		;;
+	*)
+		;;
+	esac
+}
 function VERSION_CHECK {
 	# Checking for the version the script is designed to run on ubuntu 16 and above
 	# if the version is less than 16 then script don't work
@@ -72,7 +110,7 @@ function VERSION_CHECK {
 	if [ $f -ne 1 ];then echo_error "ubuntu version is outdated [version:$current_version]"; exit 0;fi
 }
 
-function START { echo_console "++-- mdcMasakari Installation Begin"; }
+function START { echo_console "++-- mdcMasakari Installation Begin"; record start;}
 
-function END { echo_success ; }
+function END { echo_success ; record end; }
 

@@ -51,6 +51,9 @@ mdc_admin-openrc(){
 mdc_create_masakari_user() {
 	echo_console "++-- creating openstack user masakari"
 	openstack_user="masakari"
+	record substart "User"
+	record content "user:$openstack_user"
+	record content "password:$USER_PASSWORD"
 	mdc_admin-openrc
 	result=$?
 	echo_console "++-- openstack user create --domain default --password $USER_PASSWORD $openstack_user"
@@ -65,5 +68,14 @@ mdc_create_masakari_user() {
 	openstack endpoint create --region $region $openstack_user internal http://controller:15868/v1/%\(tenant_id\)s ; result=` expr $result + $? `
 	echo_console "++-- openstack endpoint create --region $region $openstack_user admin http://controller:15868/v1/%\(tenant_id\)s"
 	openstack endpoint create --region $region $openstack_user admin http://controller:15868/v1/%\(tenant_id\)s ; result=` expr $result + $? `
+	record subend
 	return $result
+}
+
+mdc_remove_masakariuser() {
+	. admin-openrc
+	echo_console "Removing masakari Users"
+	openstack user delete masakari
+	openstack service delete masakari
+
 }

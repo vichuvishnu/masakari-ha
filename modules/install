@@ -22,37 +22,46 @@
 
 # This function will install the masakari services
 #
-mdc_install_masakari () {
+function mdc_install_masakari {
 	HOST=$1
+	record substart "install in $HOST"
 	if [ "$HOST" == "controller" ]; then
 		cd $MASAKARI_DIR
 		result=$?
 		echo_console "++-- installing masakari controller service"
-		#sudo python setup.py install --record installedfiles.txt ; result=` expr $result + $? `
+		sudo python setup.py install --record record.tmp ; result=` expr $result + $? `
+		if [ $result -eq 0 ];then record content `cat record.tmp`; fi
 		cd $TOP_DIR
 		echo_console "++-- installing python-masakariclient"
-		#sudo pip install python-masakariclient ; result=` expr $result + $? `
+		sudo pip install python-masakariclient ; result=` expr $result + $? `
+		if [ $result -eq 0 ];then record content "python-masakariclient"; fi
 		echo_console "++-- installing masakari-dashboard"
-		#sudo pip install -e masakari-dashboard ; result=` expr $result + $? `
+		sudo pip install -e masakari-dashboard ; result=` expr $result + $? `
+		if [ $result -eq 0 ];then record content "masakari-dashboard"; fi
 	elif [ "$HOST" == "compute" ]; then
 		echo_console "++-- installing corosync pacemaker"
 		result=$?
-		#sudo apt-get install corosync pacemaker -y ; result=` expr $result + $? `
+		sudo apt-get install corosync pacemaker -y ; result=` expr $result + $? `
+		if [ $result -eq 0 ];then record content "corosync pacemaker"; fi
 		echo_console "++-- installing crm114"
-		#sudo apt install crm114 -y ; result=` expr $result + $? `
+		sudo apt install crm114 -y ; result=` expr $result + $? `
+		if [ $result -eq 0 ];then record content "crm114"; fi
 		echo_console "++-- installing crmsh"
-		#sudo apt install crmsh -y ; result=` expr $result + $? `
+		sudo apt install crmsh -y ; result=` expr $result + $? `
+		if [ $result -eq 0 ];then record content "crmsh"; fi
 		cd $MASAKARIMONITOR_DIR
 		echo_console "++-- installing masakari-monitors"
-		#sudo python setup.py install --record installedfiles.txt ; result=` expr $result + $? `
+		sudo python setup.py install --record record.tmp ; result=` expr $result + $? `
+		if [ $result -eq 0 ];then record content `cat record.tmp`; fi
 	fi
 	mdc_enable_masakari_service $HOST
+	record subend
 	return $result
 }
 
 # This Function will create the configuration file of masakari services
 #
-mdc_create_masakari_conf () {
+function mdc_create_masakari_conf {
 	echo_console "++-- Creating Configuration file of $HOST_NAME"
 	if [ "$HOST_NAME" == "controller" ]; then
 		if [ ! -e ${MASAKARI_CONF} ]; then
@@ -127,4 +136,43 @@ mdc_create_masakari_conf () {
 		
 	fi
 	return 0
+}
+function mdc_remove_masakariconif_files {
+	echo_console "Removing masakari $HOST_NAME configuration files"
+	HOST=$1
+	if [ "$HOST" == "controller" ];then
+		msg=`sudo rm -r /etc/masakari -v`
+		echo_console "$msg"
+		msg=`sudo rm $LIB_SERVICE_DIR/masakari-api.service -v`
+		echo_console "$msg"
+		msg=`sudo rm $MULTI_USER/masakari-api.service -v`
+		echo_console "$msg"
+		msg=`sudo rm $LIB_SERVICE_DIR/masakari-engine.service -v`
+		echo_console "$msg"
+		msg=`sudo rm $MULTI_USER/masakari-engine.service -v`
+		echo_console "$msg"
+		msg=`sudo rm $LIB_SERVICE_DIR/masakari-wsgi.service -v`
+		echo_console "$msg"
+		msg=`sudo rm $MULTI_USER/masakari-wsgi.service -v`
+		echo_console "$msg"
+	elif [ "$HOST" == "compute" ];then
+		msg=`sudo rm -r /etc/masakarimonitors -v`
+		echo_console "$msg"
+		msg=`sudo rm -r /etc/corosync/corosync.conf -v`
+		echo_console "$msg"
+		msg=`sudo rm -r /etc/default/corosync -v`
+		echo_console "$msg"
+		msg=`sudo rm $LIB_SERVICE_DIR/masakari-hostmonitor.service -v`
+		echo_console "$msg"
+		msg=`sudo rm $MULTI_USER/masakari-hostmonitor.service -v`
+		echo_console "$msg"
+		msg=`sudo rm $LIB_SERVICE_DIR/masakari-instancemonitor.service -v`
+		echo_console "$msg"
+		msg=`sudo rm $MULTI_USER/masakari-instancemonitor.service -v`
+		echo_console "$msg"
+		msg=`sudo rm $LIB_SERVICE_DIR/masakari-processmonitor.service -v`
+		echo_console "$msg"
+		msg=`sudo rm $MULTI_USER/masakari-processmonitor.service -v`
+	fi
+		
 }
