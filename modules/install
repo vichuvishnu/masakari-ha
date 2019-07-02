@@ -74,11 +74,12 @@ function mdc_create_masakari_conf {
 		sudo cp $ETC_DIR/api-paste.ini.tmp $MASAKARI_CONF/api-paste.ini -v
 		#editing masakari.conf
 		sudo sed -i "s/os_privileged_user_password = <os_privileged_user_password>.*/os_privileged_user_password = $NOVA_PASSWORD/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/os_privileged_user_auth_url = <os_privileged_user_auth_url>.*/os_privileged_user_auth_url = $OS_AUTH_URL/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/masakari_api_listen = <listen_ip>.*/masakari_api_listen = $CONTROLLER_IP/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/<DB_PASSWORD>/$DB_PASSWORD/g" $MASAKARI_CONF/masakari.conf
-		sudo sed -i "s/www_authenticate_uri= <auth_url>.*/$OS_AUTH_URL/g" $MASAKARI_CONF/masakari.conf
-		sudo sed -i "s/auth_url= <auth_url>.*/$OS_AUTH_URL/g" $MASAKARI_CONF/masakari.conf
-		sudo sed -i "s/region = <region>.*/region = $region/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/www_authenticate_uri = <auth_url>.*/www_authenticate_uri = $OS_AUTH_URL/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/auth_url = <auth_url>.*/auth_url = $OS_AUTH_URL/g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s/region = <region>/region = $region/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/project_domain_id = <project_domain_id>.*/project_domain_id = $OS_PROJECT_DOMAIN_ID/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/project_domain_name = <project_domain_name>.*/project_domain_name = $OS_PROJECT_DOMAIN_NAME/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/user_domain_id = <user_domain_id>.*/user_domain_id = $OS_USER_DOMAIN_ID/g" $MASAKARI_CONF/masakari.conf
@@ -108,7 +109,7 @@ function mdc_create_masakari_conf {
 		sudo sed -i "s/debug = <debug>.*/debug = $debug/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
 		sudo sed -i "s/log_dir = <log_dir>.*/debug = $LOG_DIR/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
 		sudo sed -i "s/region = <region>.*/region = $region/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
-		sudo sed -i "s/auth_url= <auth_url>.*/$OS_AUTH_URL/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
+		sudo sed -i "s/auth_url = <auth_url>/auth_url = $OS_AUTH_URL/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
 		sudo sed -i "s/password = <password>.*/password = $USER_PASSWORD/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
 		sudo sed -i "s/project_domain_id = <project_domain_id>.*/project_domain_id = $OS_PROJECT_DOMAIN_ID/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
 		sudo sed -i "s/project_domain_name = <project_domain_name>.*/project_domain_name = $OS_PROJECT_DOMAIN_NAME/g" $MASAKARIMONITOR_CONF/masakarimonitors.conf
@@ -177,5 +178,5 @@ function mdc_remove_masakariconif_files {
 		echo_console "$msg"
 		msg=`sudo rm $MULTI_USER/masakari-processmonitor.service -v`
 	fi
-		
+	sudo systemctl daemon-reload
 }

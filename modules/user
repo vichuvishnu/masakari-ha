@@ -52,8 +52,8 @@ mdc_create_masakari_user() {
 	echo_console "++-- creating openstack user masakari"
 	openstack_user="masakari"
 	record substart "User"
-	record content "user:$openstack_user"
-	record content "password:$USER_PASSWORD"
+	record content "user=$openstack_user"
+	record content "password=$USER_PASSWORD"
 	mdc_admin-openrc
 	result=$?
 	echo_console "++-- openstack user create --domain default --password $USER_PASSWORD $openstack_user"

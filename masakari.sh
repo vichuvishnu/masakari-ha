@@ -41,13 +41,13 @@ result=0
 START
 
 # Script run state 1
-RUN_STATE 1
+RUN_INSTALL 1
 
 # Script run state 2
-RUN_STATE 2
+RUN_INSTALL 2
 
 # Script run state 3
-RUN_STATE 3
+RUN_INSTALL 3
 
 # End the installation...
 END
