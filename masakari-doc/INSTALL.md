@@ -127,7 +127,7 @@ masakari-manage db sync
 * Run the enableService.sh script from mdcMasakari top directory to enable the masakari service with parameter controller.
 ```bash
 $ sudo -s
-# ./enableService.sh controller
+# ./service.sh controller
 ```
 * To install masakari cli commands
 ```bash
