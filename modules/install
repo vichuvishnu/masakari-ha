@@ -89,7 +89,7 @@ function mdc_create_masakari_conf {
 		sudo sed -i "s/password = <password>.*/password = $USER_PASSWORD/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/host = <hostname>.*/host = $my_ip/g" $MASAKARI_CONF/masakari.conf
 		sudo sed -i "s/debug = <debug>.*/debug = $debug/g" $MASAKARI_CONF/masakari.conf
-		sudo sed -i "s+log_dir = <log_dir>.*+debug = $LOG_DIR+g" $MASAKARI_CONF/masakari.conf
+		sudo sed -i "s+log_dir = <log_dir>.*+log_dir = $LOG_DIR+g" $MASAKARI_CONF/masakari.conf
 		
 	elif [ "$HOST_NAME" == "compute" ]; then
 		if [ ! -e ${MASAKARIMONITOR_CONF} ]; then
