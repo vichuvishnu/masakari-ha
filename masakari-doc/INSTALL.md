@@ -45,7 +45,18 @@ MariaDB [(none)]> GRANT ALL PRIVILEGES ON masakari.* TO 'masakari'@'%' \
 * Create masakari user:
 ```bash
 $ openstack user create --password-prompt masakari
-(give password as masakari)
+User Password:
+Repeat User Password:
++---------------------+----------------------------------+
+| Field               | Value                            |
++---------------------+----------------------------------+
+| domain_id           | default                          |
+| enabled             | True                             |
+| id                  | 02aaf7853eeb4c8d95de591acf3a8cc0 |
+| name                | masakari                         |
+| options             | {}                               |
+| password_expires_at | None                             |
++---------------------+----------------------------------+
 ```
 
 * Add admin role to masakari user:
