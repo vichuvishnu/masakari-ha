@@ -138,7 +138,7 @@ $ pip install python-masakariclient
 $ git clone https://github.com/openstack/masakari-dashboard --branch stable/rocky
 $ sudo pip install -e masakari-dashboard
 (run this command out side the masakari-dasboard directory)
-$ HOME_DIR=pwd
+$ HOME_DIR=`pwd`
 (run this command out side the masakari-dasboard directory)
 $ ln -s $HOME_DIR/masakari-dashboard/masakaridashboard/local/enabled/_50_masakaridashboard.py /usr/lib/python2.7/dist-packages/openstack_dashboard/local/enabled 
 $ ln -s $HOME_DIR/masakari-dashboard/masakaridashboard/local/local_settings.d/_50_masakari.py /usr/lib/python2.7/dist-packages/openstack_dashboard/local/local_settings.d
