@@ -299,52 +299,48 @@ $ sudo -s
 * In controller add the create segment and add host (mininum two compute host)
 ```bash
 $ . admin-openrc
-$ masakari segment-create --name failover --recovery-method auto --service-type compute --description instance_ha 
-+-----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Property        | Value                                                                                                                                                                 |
-+-----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| created_at      | 2019-05-03T09:59:08.085106                                                                                                                                            |
-| description     | instance_ha                                                                                                                                                           |
-| id              | 2                                                                                                                                                                     |
-| location        | {"project": {"domain_id": null, "id": "b40d394fef1e4a12b78dddf24aca3087", "name": null, "domain_name": null}, "zone": null, "region_name": "", "cloud": "controller"} |
-| name            | failover                                                                                                                                                              |
-| recovery_method | auto                                                                                                                                                                  |
-| service_type    | compute                                                                                                                                                               |
-| updated_at      | -                                                                                                                                                                     |
-| uuid            | 2c18541e-dc47-4f90-b415-a0d050841771                                                                                                                                  |
-+-----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-$ masakari host-create --name compute5 --type COMPUTE --control-attributes SSH --segment-id 2c18541e-dc47-4f90-b415-a0d050841771
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Property            | Value                                                                                                                                                                 |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| control_attributes  | SSH                                                                                                                                                                   |
-| created_at          | 2019-05-03T10:34:39.466620                                                                                                                                            |
-| failover_segment_id | 2c18541e-dc47-4f90-b415-a0d050841771                                                                                                                                  |
-| id                  | 4                                                                                                                                                                     |
-| location            | {"project": {"domain_id": null, "id": "b40d394fef1e4a12b78dddf24aca3087", "name": null, "domain_name": null}, "zone": null, "region_name": "", "cloud": "controller"} |
-| name                | compute5                                                                                                                                                              |
-| on_maintenance      | False                                                                                                                                                                 |
-| reserved            | False                                                                                                                                                                 |
-| type                | COMPUTE                                                                                                                                                               |
-| updated_at          | -                                                                                                                                                                     |
-| uuid                | 7abd98c9-10eb-45df-9acc-88ae669a7cc8                                                                                                                                  |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-$ masakari host-create --name compute3 --type COMPUTE --control-attributes SSH --segment-id 2c18541e-dc47-4f90-b415-a0d050841771
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Property            | Value                                                                                                                                                                 |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| control_attributes  | SSH                                                                                                                                                                   |
-| created_at          | 2019-05-03T10:34:39.466620                                                                                                                                            |
-| failover_segment_id | 2c18541e-dc47-4f90-b415-a0d050841771                                                                                                                                  |
-| id                  | 5                                                                                                                                                                     |
-| location            | {"project": {"domain_id": null, "id": "457823daef1e4a12b78dddf24aca3087", "name": null, "domain_name": null}, "zone": null, "region_name": "", "cloud": "controller"} |
-| name                | compute3                                                                                                                                                              |
-| on_maintenance      | False                                                                                                                                                                 |
-| reserved            | False                                                                                                                                                                 |
-| type                | COMPUTE                                                                                                                                                               |
-| updated_at          | -                                                                                                                                                                     |
-| uuid                | 42q848c9-10eb-45df-9acc-88ae669a7cc8                                                                                                                                  |
-+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+$ openstack segment create segment001 auto compute
++-----------------+--------------------------------------+
+| Field           | Value                                |
++-----------------+--------------------------------------+
+| created_at      | 2019-12-03T05:19:16.000000           |
+| updated_at      | None                                 |
+| uuid            | 382d9042-0542-40f2-a253-b87e1839bc06 |
+| name            | segment001                           |
+| description     | None                                 |
+| id              | 1                                    |
+| service_type    | compute                              |
+| recovery_method | auto                                 |
++-----------------+--------------------------------------+
+$ openstack segment host create compute1 compute ssh segment001
++---------------------+--------------------------------------+
+| Field               | Value                                |
++---------------------+--------------------------------------+
+| created_at          | 2019-12-03T05:20:54.000000           |
+| updated_at          | None                                 |
+| uuid                | b529f8e7-88f9-449c-a4d8-e60fd07e9cf4 |
+| name                | compute1                             |
+| type                | compute                              |
+| control_attributes  | ssh                                  |
+| reserved            | False                                |
+| on_maintenance      | False                                |
+| failover_segment_id | 382d9042-0542-40f2-a253-b87e1839bc06 |
++---------------------+--------------------------------------+
+
+$ openstack segment host create compute2 compute ssh segment001
++---------------------+--------------------------------------+
+| Field               | Value                                |
++---------------------+--------------------------------------+
+| created_at          | 2019-12-03T05:20:54.000000           |
+| updated_at          | None                                 |
+| uuid                | b529f8e7-88f9-449c-a4d8-e60fd07e9cf4 |
+| name                | compute2                             |
+| type                | compute                              |
+| control_attributes  | ssh                                  |
+| reserved            | False                                |
+| on_maintenance      | False                                |
+| failover_segment_id | 382d9042-0542-40f2-a253-b87e1839bc06 |
++---------------------+--------------------------------------+
 ```
 * Create an instance in host that is going to down.
 * Verify that the instance is in the correct host.
