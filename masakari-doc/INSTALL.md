@@ -47,11 +47,27 @@ MariaDB [(none)]> GRANT ALL PRIVILEGES ON masakari.* TO 'masakari'@'%' \
 $ openstack user create --password-prompt masakari
 (give password as masakari)
 ```
+Its output will be like
+```bash
+User Password:
+Repeat User Password:
++---------------------+----------------------------------+
+| Field               | Value                            |
++---------------------+----------------------------------+
+| domain_id           | default                          |
+| enabled             | True                             |
+| id                  | 55b5d315acd74b5bb69884d2c54cff44 |
+| name                | masakari                         |
+| options             | {}                               |
+| password_expires_at | None                             |
++---------------------+----------------------------------+
+```
 
 * Add admin role to masakari user:
 ```bash
 $ openstack role add --project service --user masakari admin
 ```
+This command doesnot have an output
 
 * Create new service:
 ```bash
