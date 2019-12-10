@@ -46,9 +46,7 @@ MariaDB [(none)]> GRANT ALL PRIVILEGES ON masakari.* TO 'masakari'@'%' \
 ```bash
 $ openstack user create --password-prompt masakari
 (give password as masakari)
-```
-Its output will be like
-```bash
+
 User Password:
 Repeat User Password:
 +---------------------+----------------------------------+
@@ -72,6 +70,16 @@ This command doesnot have an output
 * Create new service:
 ```bash
 $ openstack service create --name masakari --description "masakari high availability" instance-ha
+
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | masakari high availability       |
+| enabled     | True                             |
+| id          | b283d42c1a6e4d6d90b78490bcb2dc90 |
+| name        | masakari                         |
+| type        | instance-ha                      |
++-------------+----------------------------------+
 ```
 
 * Create endpoint for masakari service:
