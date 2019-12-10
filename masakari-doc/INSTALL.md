@@ -86,10 +86,55 @@ $ openstack service create --name masakari --description "masakari high availabi
 ```bash
 $ openstack endpoint create --region RegionOne \
   masakari public http://controller:15868/v1/%\(tenant_id\)s
+
++--------------+------------------------------------------+
+| Field        | Value                                    |
++--------------+------------------------------------------+
+| enabled      | True                                     |
+| id           | 1bbf190a6a7c4fdfb626b98870926d3e         |
+| interface    | public                                   |
+| region       | RegionOne                                |
+| region_id    | RegionOne                                |
+| service_id   | b283d42c1a6e4d6d90b78490bcb2dc90         |
+| service_name | masakari                                 |
+| service_type | instance-ha                              |
+| url          | http://controller:15868/v1/%(tenant_id)s |
++--------------+------------------------------------------+
+
 $ openstack endpoint create --region RegionOne \
   masakari internal http://controller:15868/v1/%\(tenant_id\)s
+
++--------------+------------------------------------------+
+| Field        | Value                                    |
++--------------+------------------------------------------+
+| enabled      | True                                     |
+| id           | 97ee3d376e1144beaf955e920e95e531         |
+| interface    | internal                                 |
+| region       | RegionOne                                |
+| region_id    | RegionOne                                |
+| service_id   | b283d42c1a6e4d6d90b78490bcb2dc90         |
+| service_name | masakari                                 |
+| service_type | instance-ha                              |
+| url          | http://controller:15868/v1/%(tenant_id)s |
++--------------+------------------------------------------+
+
 $ openstack endpoint create --region RegionOne \
   masakari admin http://controller:15868/v1/%\(tenant_id\)s
+
++--------------+------------------------------------------+
+| Field        | Value                                    |
++--------------+------------------------------------------+
+| enabled      | True                                     |
+| id           | d180fd02a13c4e069fbc262fe1482e59         |
+| interface    | admin                                    |
+| region       | RegionOne                                |
+| region_id    | RegionOne                                |
+| service_id   | b283d42c1a6e4d6d90b78490bcb2dc90         |
+| service_name | masakari                                 |
+| service_type | instance-ha                              |
+| url          | http://controller:15868/v1/%(tenant_id)s |
++--------------+------------------------------------------+
+ 
 ```
 
 * To install masakari run setup.py from masakari
