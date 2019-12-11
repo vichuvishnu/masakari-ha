@@ -309,7 +309,7 @@ $ tox -egenconfig
 * While running the tox -egenconfig if any error occur the run the masakarireq.sh script and then again run tox -egenconfig
 ```bash
 $ sudo -s
-# ./masakarireq.sh
+# ./requirement.sh
 ```
 * Edit the configuration file, sample configuration is in the same directory.
 * Open /etc/masakarimonitors/masakarimonitors.conf
