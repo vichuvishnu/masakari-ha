@@ -1,5 +1,8 @@
 #!/bin/bash
 sudo apt install python-pip -y
+sudo apt install python3-pip -y
+sudo pip install tox
+sudo pip3 install tox
 sudo apt-get install libpq-dev -y
 sudo apt-get install python-dev -y
 sudo apt-get install gcc -y
