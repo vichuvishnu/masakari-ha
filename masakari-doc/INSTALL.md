@@ -238,53 +238,43 @@ $ sudo apt install crmsh
 * Minimal configuration of corosync. Open /etc/corosync/corosync.conf
 ```bash
 totem {
-        version: 2
-
-        crypto_cipher: none
-        crypto_hash: none
-
-        interface {
-                ringnumber: 0
-                bindnetaddr: <bind-address>
-                mcastaddr: 226.94.1.1
-                mcastport: 5405
-                ttl: 1
-        }
-        transport: udpu
+  version: 2
+  cluster_name: lbcluster
+  transport: udpu
+  interface {
+    ringnumber: 0
+    bindnetaddr: server_private_IP_address
+    broadcast: yes
+    mcastport: 5405
+  }
 }
 
-logging {
-        fileline: off
-        to_logfile: yes
-        to_syslog: yes
-        logfile: /var/log/corosync/corosync.log
-        debug: off
-        timestamp: on
-        logger_subsys {
-                subsys: QUORUM
-                debug: on
-        }
+quorum {
+  provider: corosync_votequorum
+  two_node: 1
 }
 
 nodelist {
-        node {
-                ring0_addr: <compute1-address>
-                nodeid: 1
-        }
-        node {
-                ring0_addr: <compute2-address>
-                nodeid: 2
-        }
-}
-quorum {
-        # Enable and configure quorum subsystem (default: off)
-        # see also corosync.conf.5 and votequorum.5
-        provider: corosync_votequorum
-        two_node: 1
+  node {
+    ring0_addr: compute1-address
+    name: primary
+    nodeid: 1
+  }
+  node {
+    ring0_addr: compute2-address
+    name: secondary
+    nodeid: 2
+  }
 }
 
+logging {
+  to_logfile: yes
+  logfile: /var/log/corosync/corosync.log
+  to_syslog: yes
+  timestamp: on
+}
 ```
-```<bind-address>```will be like this 192.168.1.0,```<compute1-address>``` will be the ip address of compute1 and so on. node section will increase according to the no of compute node in the cluster.
+```server_private_IP_address```will be like this 192.168.1.0,```compute1-address``` will be the ip address of compute1 and so on. node section will increase according to the no of compute node in the cluster.
 	
 * Open /etc/default/corosync
 ```bash
